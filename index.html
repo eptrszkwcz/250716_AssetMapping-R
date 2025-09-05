@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asset Mapping - Mapbox</title>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css' rel='stylesheet' />
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Asset Mapping</h1>
+        </header>
+        
+        <main class="main">
+            <div id="map" class="map-container"></div>
+            
+            <div class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <h3>Asset Details</h3>
+                    <button id="closeSidebar" class="close-btn">&times;</button>
+                </div>
+                <div class="sidebar-content" id="sidebarContent">
+                    <p>Click on a point to view details</p>
+                </div>
+            </div>
+        </main>
+        
+        <div class="legend">
+            <h4>Legend</h4>
+            <div class="legend-item">
+                <span class="legend-color" style="background-color: #03B570;"></span>
+                <span>Collective Locations</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-color" style="background-color: #ED5FAB;"></span>
+                <span>Allocator LPs</span>
+            </div>
+            
+            <div class="legend-item">
+                <span class="legend-color" style="background-color: #9B59B6;"></span>
+                <span>Direct Investments</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-color" style="background-color: #FFD600;"></span>
+                <span>General Partner Location</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-color" style="background-color: #006FFF;"></span>
+                <span>Portfolio Companies</span>
+            </div>  
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
