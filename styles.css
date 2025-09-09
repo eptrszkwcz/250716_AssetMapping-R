@@ -184,8 +184,14 @@ body {
     align-items: center;
     gap: 0.5rem;
     margin-bottom: 0.25rem;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     color: #43645D;
+    justify-content: space-between;
+    height: 32px;
+}
+
+.legend-item span:not(.legend-color) {
+    flex: 1;
 }
 
 .legend-color {
@@ -195,6 +201,78 @@ body {
     /* border: 2px solid white; */
     box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     opacity: 0.6;
+}
+
+/* Toggle switch styles */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 18px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #2f4a45; 
+    transition: .4s;
+    border-radius: 18px;
+}
+
+.toggle-slider:before {  /* this is the slider button */
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 2px;
+    bottom: 2px;
+    /* background-color: #43645D; */
+    background-color: #43645D; /*done*/;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+.toggle-slider:hover::after {
+    background-color: #2a413c; 
+    /* background-color: red; */
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background-color: #213632; /*done*/
+    /* background-color: red; */
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(18px);
+    background-color: #43645D; /*done*/
+}
+
+.toggle-switch:hover .toggle-slider {
+    /* background-color: #5B8E83;  */
+    background-color: #2a413c; /*this one*/
+}
+
+.toggle-switch input:checked:hover + .toggle-slider {
+    background-color: #2f4a45; /* Slightly dimmer bright on hover when ON */
+}
+
+/* Fade legend items when toggle is off */
+.legend-item:has(input:not(:checked)) {
+    opacity: 0.3;
+}
+
+.legend-item:has(input:checked) {
+    opacity: 1;
 }
 
 /* Mapbox popup customization */

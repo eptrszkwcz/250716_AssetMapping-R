@@ -62,6 +62,7 @@ const DRAW_ORDER = {
     'portfolio-connection-lines-hover': 4,
     'collective-gp-connection-lines': 5,
     'collective-gp-connection-lines-hover': 6,
+    'direct-investment-connection-lines': 7,
     
     // Points (in order from lowest to highest)
     'points-allocator-lps': 10,
@@ -144,6 +145,7 @@ async function loadAllDataFromGoogleSheets() {
         let collectivePoints = [];
         let portfolioPoints = [];
         let gpPoints = [];
+        let directInvestmentPoints = [];
         
         for (const [tabName, config] of Object.entries(TABS_CONFIG)) {
             try {
@@ -184,6 +186,8 @@ async function loadAllDataFromGoogleSheets() {
                         portfolioPoints = validData;
                     } else if (tabName === 'General Partner Location') {
                         gpPoints = validData;
+                    } else if (tabName === 'Direct Investments') {
+                        directInvestmentPoints = validData;
                     }
                 }
                 
@@ -207,10 +211,18 @@ async function loadAllDataFromGoogleSheets() {
             createCollectiveGPConnections(collectivePoints, gpPoints);
         }
         
+        // Create connection lines between Direct Investments and their closest two Collective Locations
+        if (directInvestmentPoints.length > 0 && collectivePoints.length > 0) {
+            createDirectInvestmentConnections(directInvestmentPoints, collectivePoints);
+        }
+        
         console.log(`Loaded ${totalPoints} total points from all tabs`);
         
         // Set the proper draw order for all layers
         setLayerDrawOrder();
+        
+        // Setup legend toggle functionality after all layers are created
+        setupLegendToggles();
         
     } catch (error) {
         console.error('Error loading data:', error);
@@ -874,6 +886,104 @@ function createCollectiveGPConnections(collectivePoints, gpPoints) {
     console.log(`Created ${connections.length} collective-GP connection lines`);
 }
 
+// Create connection lines between Direct Investments and their closest two Collective Locations
+function createDirectInvestmentConnections(directInvestmentPoints, collectivePoints) {
+    const directInvestmentConnectionLayerId = 'direct-investment-connection-lines';
+    const directInvestmentConnectionSourceId = 'direct-investment-connection-source';
+    
+    // Clear existing direct investment connection layers and sources
+    if (map.getLayer(directInvestmentConnectionLayerId)) {
+        map.removeLayer(directInvestmentConnectionLayerId);
+    }
+    if (map.getSource(directInvestmentConnectionSourceId)) {
+        map.removeSource(directInvestmentConnectionSourceId);
+    }
+    
+    const connections = [];
+    
+    // For each direct investment point, find the closest two collective locations
+    directInvestmentPoints.forEach((directInvestment, index) => {
+        const directInvestmentLat = parseFloat(directInvestment.latitude || directInvestment.lat || directInvestment.Lat || directInvestment.Latitude || directInvestment.LAT);
+        const directInvestmentLng = parseFloat(directInvestment.longitude || directInvestment.lng || directInvestment.lon || directInvestment.Lon || directInvestment.long || directInvestment.Longitude || directInvestment.LNG);
+        
+        if (isNaN(directInvestmentLat) || isNaN(directInvestmentLng)) {
+            return;
+        }
+        
+        // Calculate distances to all collective locations
+        const distances = collectivePoints.map(collective => {
+            const collectiveLat = parseFloat(collective.latitude || collective.lat || collective.Lat || collective.Latitude || collective.LAT);
+            const collectiveLng = parseFloat(collective.longitude || collective.lng || collective.lon || collective.Lon || collective.long || collective.Longitude || collective.LNG);
+            
+            if (isNaN(collectiveLat) || isNaN(collectiveLng)) {
+                return { distance: Infinity, collective };
+            }
+            
+            const distance = calculateDistance(directInvestmentLat, directInvestmentLng, collectiveLat, collectiveLng);
+            return { distance, collective };
+        });
+        
+        // Sort by distance and take the closest two
+        distances.sort((a, b) => a.distance - b.distance);
+        const closestTwo = distances.slice(0, 2);
+        
+        // Create connection lines to the closest two collective locations
+        closestTwo.forEach(({ collective, distance }, connectionIndex) => {
+            const collectiveLat = parseFloat(collective.latitude || collective.lat || collective.Lat || collective.Latitude || collective.LAT);
+            const collectiveLng = parseFloat(collective.longitude || collective.lng || collective.lon || collective.Lon || collective.long || collective.Longitude || collective.LNG);
+            
+            const connectionId = `direct-investment-connection-${index}-${connectionIndex}`;
+            
+            const connection = {
+                type: 'Feature',
+                id: connectionId,
+                properties: {
+                    id: connectionId,
+                    directInvestmentName: directInvestment['Company Name'] || directInvestment['company name'] || directInvestment['Company'] || 'Unknown Direct Investment',
+                    collectiveName: collective['Company Name'] || collective['company name'] || collective['Company'] || 'Unknown Collective',
+                    distance: distance.toFixed(2)
+                },
+                geometry: {
+                    type: 'LineString',
+                    coordinates: [
+                        [directInvestmentLng, directInvestmentLat],
+                        [collectiveLng, collectiveLat]
+                    ]
+                }
+            };
+            
+            connections.push(connection);
+        });
+    });
+    
+    if (connections.length === 0) {
+        return;
+    }
+    
+    // Add the connection source and layer
+    map.addSource(directInvestmentConnectionSourceId, {
+        type: 'geojson',
+        data: {
+            type: 'FeatureCollection',
+            features: connections
+        }
+    });
+    
+    // Add connection layer (same color as direct investment points)
+    map.addLayer({
+        id: directInvestmentConnectionLayerId,
+        type: 'line',
+        source: directInvestmentConnectionSourceId,
+        paint: {
+            'line-color': '#9B59B6', // Same color as direct investment points
+            'line-width': 1,
+            'line-opacity': 0.3
+        }
+    });
+    
+    console.log(`Created ${connections.length} direct investment connection lines`);
+}
+
 // Calculate distance between two points using Haversine formula
 function calculateDistance(lat1, lon1, lat2, lon2) {
     const R = 6371; // Radius of the Earth in kilometers
@@ -1067,6 +1177,69 @@ function setupEventListeners() {
         }
     });
 }
+
+// Setup legend toggle functionality
+function setupLegendToggles() {
+    
+    const toggleInputs = document.querySelectorAll('.toggle-switch input[data-layer]');
+    
+    
+    toggleInputs.forEach((toggle, index) => {
+        const layerId = toggle.getAttribute('data-layer');
+        
+        // Check if layer exists
+        const layerExists = map.getLayer(layerId);
+        
+        if (!layerExists) {
+            console.warn(`Layer ${layerId} not found on map!`);
+        }
+        
+        toggle.addEventListener('change', (e) => {
+            const targetLayerId = e.target.getAttribute('data-layer');
+            const isVisible = e.target.checked;
+            
+            
+            try {
+                // Define which connection lines correspond to each point type
+                const layerConnections = {
+                    'points-portfolio-companies': ['portfolio-connection-lines', 'portfolio-connection-lines-hover'],
+                    'points-allocator-lps': ['connection-lines', 'connection-lines-hover'],
+                    'points-general-partner-location': ['collective-gp-connection-lines', 'collective-gp-connection-lines-hover'],
+                    'points-direct-investments': ['direct-investment-connection-lines']
+                };
+                
+                const visibility = isVisible ? 'visible' : 'none';
+                
+                // Toggle the main point layer
+                if (map.getLayer(targetLayerId)) {
+                    map.setLayoutProperty(targetLayerId, 'visibility', visibility);
+                    
+                } else {
+                    console.error(`Layer ${targetLayerId} does not exist on map!`);
+                }
+                
+                // Toggle corresponding connection lines
+                const connectionLayers = layerConnections[targetLayerId];
+                if (connectionLayers) {
+                    connectionLayers.forEach(connectionLayerId => {
+                        if (map.getLayer(connectionLayerId)) {
+                            map.setLayoutProperty(connectionLayerId, 'visibility', visibility);
+                            
+                        } else {
+                            console.warn(`Connection layer ${connectionLayerId} does not exist on map!`);
+                        }
+                    });
+                } else {
+                }
+                
+            } catch (error) {
+                console.error(`Error toggling layer ${targetLayerId}:`, error);
+            }
+        });
+    });
+    
+}
+
 
 
 
