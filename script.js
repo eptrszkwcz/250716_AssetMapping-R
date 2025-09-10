@@ -10,7 +10,8 @@ const TABS_CONFIG = {
         color: '#006FFF', // Blue
         strokeColor: '#2E5BBA',
         strokeWidth: 0,
-        opacity: 0.3,
+        // opacity: 0.3,
+        opacity: 0.5,
         strokeOpacity: 0.9,
         radius: 4
     },
@@ -18,7 +19,8 @@ const TABS_CONFIG = {
         color: '#9B59B6', // Purple
         strokeColor: '#8E44AD',
         strokeWidth: 0,
-        opacity: 0.5,
+        // opacity: 0.5,
+        opacity: 0.8,
         strokeOpacity: 0.9,
         radius: 10
     },
@@ -26,17 +28,18 @@ const TABS_CONFIG = {
         color: '#FFD600', // Red
         strokeColor: '#C0392B',
         strokeWidth: 0,
-        opacity: 0.4,
+        // opacity: 0.4,
+        opacity: 0.7,
         strokeOpacity: 0.9,
         radius: 10
     },
     'Collective Locations': {
         color: '#03B570', // Teal
         strokeColor: '#03B570',
-        strokeWidth: 4,
+        strokeWidth: 5,
         opacity: 0,
         strokeOpacity: 1,
-        radius: 6
+        radius: 8
     },
     'Allocator LPs': {
         color: '#ED5FAB', 
@@ -69,6 +72,7 @@ const DRAW_ORDER = {
     'points-portfolio-companies': 20,
     'points-direct-investments': 30,
     'points-general-partner-location': 40,
+    'points-collective-locations-shadow': 45, // Shadow layer beneath collective points
     'points-collective-locations': 50
 };
 
@@ -358,7 +362,42 @@ function displayPoints(data, tabName, config) {
         promoteId: 'id'
     });
     
-    // Add circle layer
+    // For Collective Locations, add a shadow layer first (beneath the main points)
+    if (tabName === 'Collective Locations') {
+        const shadowLayerId = `${layerId}-shadow`;
+        const shadowSourceId = `${sourceId}-shadow`;
+        
+        // Clear existing shadow layer and source
+        if (map.getLayer(shadowLayerId)) {
+            map.removeLayer(shadowLayerId);
+        }
+        if (map.getSource(shadowSourceId)) {
+            map.removeSource(shadowSourceId);
+        }
+        
+        // Add shadow source (same data as main points)
+        map.addSource(shadowSourceId, {
+            type: 'geojson',
+            data: geojsonData,
+            promoteId: 'id'
+        });
+        
+        // Add shadow layer (larger, blurred circle beneath main points)
+        map.addLayer({
+            id: shadowLayerId,
+            type: 'circle',
+            source: shadowSourceId,
+            layout: {},
+            paint: {
+                'circle-radius': config.radius * 4, // Make shadow larger than main point
+                'circle-color': '#000000', // Black shadow
+                'circle-opacity': 0.5, // Subtle shadow opacity
+                'circle-blur': 1 // Blur the shadow for soft effect
+            }
+        });
+    }
+    
+    // Add main circle layer
     map.addLayer({
         id: layerId,
         type: 'circle',
@@ -1216,6 +1255,14 @@ function setupLegendToggles() {
                     
                 } else {
                     console.error(`Layer ${targetLayerId} does not exist on map!`);
+                }
+                
+                // For collective points, also toggle the shadow layer
+                if (targetLayerId === 'points-collective-locations') {
+                    const shadowLayerId = 'points-collective-locations-shadow';
+                    if (map.getLayer(shadowLayerId)) {
+                        map.setLayoutProperty(shadowLayerId, 'visibility', visibility);
+                    }
                 }
                 
                 // Toggle corresponding connection lines
