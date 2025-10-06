@@ -76,12 +76,7 @@ body {
 
 /* Mapbox canvas background */
 .map-container canvas {
-    background-color: #0A1F1C !important;
-}
-
-/* Alternative selector for Mapbox canvas */
-.mapboxgl-canvas {
-    background-color: #0A1F1C !important;
+    background-color: var(--map-bg, #0A1F1C) !important;
 }
 
 /* Custom circle styles */
@@ -224,7 +219,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #2f4a45; 
+    background-color: var(--toggle-bg, #2f4a45); 
     transition: .4s;
     border-radius: 18px;
 }
@@ -236,34 +231,30 @@ body {
     width: 14px;
     left: 2px;
     bottom: 2px;
-    /* background-color: #43645D; */
-    background-color: #43645D; /*done*/;
+    background-color: var(--toggle-button, #43645D);
     transition: .4s;
     border-radius: 50%;
 }
 
 .toggle-slider:hover::after {
-    background-color: #2a413c; 
-    /* background-color: red; */
+    background-color: var(--toggle-hover, #2a413c); 
 }
 
 .toggle-switch input:checked + .toggle-slider {
-    background-color: #213632; /*done*/
-    /* background-color: red; */
+    background-color: var(--toggle-bg-checked, #213632);
 }
 
 .toggle-switch input:checked + .toggle-slider:before {
     transform: translateX(18px);
-    background-color: #43645D; /*done*/
+    background-color: var(--toggle-button, #43645D);
 }
 
 .toggle-switch:hover .toggle-slider {
-    /* background-color: #5B8E83;  */
-    background-color: #2a413c; /*this one*/
+    background-color: var(--toggle-hover, #2a413c);
 }
 
 .toggle-switch input:checked:hover + .toggle-slider {
-    background-color: #2f4a45; /* Slightly dimmer bright on hover when ON */
+    background-color: var(--toggle-bg, #2f4a45);
 }
 
 /* Fade legend items when toggle is off */
@@ -284,37 +275,37 @@ body {
     padding: 1.5rem;
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-    background-color: #0A1B19 !important;
-    color: #43645D !important;
+    background-color: var(--popup-bg, #0A1B19) !important;
+    color: var(--popup-text, #43645D) !important;
 }
 
 .mapboxgl-popup-close-button {
     font-size: 1.2rem;
-    color: #43645D !important;
+    color: var(--popup-text, #43645D) !important;
     padding: 0.5rem;
     opacity: 0.4;
 }
 
 /* Custom popup styling */
 .custom-popup .mapboxgl-popup-content {
-    background-color: #0A1B19 !important;
-    color: #43645D !important;
+    background-color: var(--popup-bg, #0A1B19) !important;
+    color: var(--popup-text, #43645D) !important;
 }
 
 .custom-popup .mapboxgl-popup-content p {
-    color: #43645D !important;
+    color: var(--popup-text, #43645D) !important;
 }
 
 .custom-popup .mapboxgl-popup-content strong {
-    color: #43645D !important;
+    color: var(--popup-text, #43645D) !important;
 }
 
 /* Hover popup styling - smaller and more compact */
 .hover-popup .mapboxgl-popup-content {
     padding: 1rem !important;
     max-width: 250px !important;
-    background-color: #0A1B19 !important;
-    border: 1px solid rgba(91, 142, 131, 0.3) !important;
+    background-color: var(--popup-bg, #0A1B19) !important;
+    border: 1px solid var(--popup-border, rgba(91, 142, 131, 0.3)) !important;
 }
 
 .hover-popup .popup-title {
@@ -339,8 +330,8 @@ body {
 .click-popup .mapboxgl-popup-content {
     padding: 1.5rem !important;
     max-width: 350px !important;
-    background-color: #0A1B19 !important;
-    border: 1px solid rgba(91, 142, 131, 0.5) !important;
+    background-color: var(--popup-bg, #0A1B19) !important;
+    border: 1px solid var(--popup-border-hover, rgba(91, 142, 131, 0.5)) !important;
 }
 
 .click-popup .popup-title {
@@ -369,7 +360,7 @@ body {
 
 .connection-separator {
     height: 1px;
-    background-color: rgba(91, 142, 131, 0.3);
+    background-color: var(--popup-border, rgba(91, 142, 131, 0.3));
     margin: 1rem 0;
 }
 
@@ -380,7 +371,7 @@ body {
 .endpoint-title {
     font-size: 1rem;
     font-weight: 600;
-    color: #5B8E83;
+    color: var(--popup-title, #5B8E83);
     margin-bottom: 0.5rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -389,14 +380,14 @@ body {
 .endpoint-name {
     font-size: 1rem;
     font-weight: bold;
-    color: #5B8E83;
+    color: var(--popup-title, #5B8E83);
     margin-bottom: 0.5rem;
 }
 
 .endpoint-detail {
     font-size: 0.85rem;
     margin-bottom: 0.25rem;
-    color: #43645D;
+    color: var(--popup-text, #43645D);
 }
 
 .endpoint-detail .popup-label {
@@ -430,18 +421,18 @@ body {
     margin: 0 0 8px 0;
     font-size: 1.1rem;
     font-weight: bold;
-    color: #5B8E83;
+    color: var(--popup-title, #5B8E83);
 }
 
 .popup-label {
     font-weight: normal;
-    color: #43645D;
+    color: var(--popup-text, #43645D);
     opacity: 0.7;
 }
 
 .popup-value {
     font-weight: bold;
-    color: #5B8E83;
+    color: var(--popup-title, #5B8E83);
 }
 
 /* Popup tag styling */
@@ -450,12 +441,12 @@ body {
     align-items: center;
     gap: 6px;
     padding: 4px 8px;
-    background-color: rgba(255, 255, 255, 0.03);
-    border: 0.5px solid #43645D;
+    background-color: var(--tag-bg, rgba(255, 255, 255, 0.03));
+    border: 0.5px solid var(--tag-border, #43645D);
     border-radius: 8px;
     margin: 0px 0 8px 0;
     font-size: 0.8rem;
-    color: #43645D;
+    color: var(--popup-text, #43645D);
 }
 
 .popup-tag-dot {
@@ -467,7 +458,7 @@ body {
 
 .popup-tag-label {
     font-weight: 500;
-    color: #43645D;
+    color: var(--popup-text, #43645D);
 }
 
 /* Mapbox controls opacity */
@@ -487,27 +478,27 @@ body {
 
 /* Mapbox controls styling */
 .mapboxgl-ctrl-group {
-    background-color: #0A1B19 !important;
-    border-color: #0A1B19 !important;
+    background-color: var(--map-control-bg, #4B6360) !important;
+    border-color: var(--map-control-bg, #4B6360) !important;
 }
 
 .mapboxgl-ctrl-group button {
-    background-color: #0A1B19 !important;
-    color: #43645D !important;
-    border-color: #0A1B19 !important;
+    background-color: var(--map-control-bg, #4B6360) !important;
+    color: var(--map-control-color, #43645D) !important;
+    border-color: var(--map-control-bg, #4B6360) !important;
 }
 
 .mapboxgl-ctrl-group button:hover {
-    background-color: #43645D !important;
-    color: #0A1B19 !important;
+    background-color: var(--map-control-hover-bg, #43645D) !important;
+    color: var(--map-control-hover-color, #4B6360) !important;
 }
 
 .mapboxgl-ctrl-group .mapboxgl-ctrl-icon {
-    color: #43645D !important;
+    color: var(--map-control-color, #43645D) !important;
 }
 
 .mapboxgl-ctrl-group button:hover .mapboxgl-ctrl-icon {
-    color: #0A1B19 !important;
+    color: var(--map-control-hover-color, #4B6360) !important;
 }
 
 /* Hide Mapbox attribution */

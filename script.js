@@ -3,6 +3,384 @@
 const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoicHRyc3prd2N6IiwiYSI6ImNpdHVuOXpqMzAwMmEybnF2anZwbTd4aWcifQ.MF8M3qBg0AEp_-10FB4juw';
 const GOOGLE_SHEET_ID = '1waBUthisVzvuqBnXjoggBanNwvOL_-xn3JsdgA5QqC0';
 
+// Theme configuration
+let isLightTheme = false; // Boolean to control light/dark theme
+
+// Portfolio color configuration
+let isPortfolioColorMode = false; // Boolean to control portfolio vs category coloring
+let portfolioColorMap = {}; // Map of portfolio names to colors
+
+// Global point arrays for reloading
+let allocatorPoints = [];
+let collectivePoints = [];
+let portfolioPoints = [];
+let gpPoints = [];
+let directInvestmentPoints = [];
+
+// Theme color palettes
+const THEME_COLORS = {
+    dark: {
+        // Background colors
+        bodyBg: '#0f1529',
+        headerBg: 'linear-gradient(135deg, #132724 0%, #0A1B19 100%)',
+        mapBg: '#0A1F1C',
+        legendBg: '#0A1B19',
+        popupBg: '#0A1B19',
+        
+        // Text colors
+        headerText: '#5B8E83',
+        legendText: '#5B8E83',
+        legendSubtext: '#43645D',
+        popupText: '#43645D',
+        popupTitle: '#5B8E83',
+        
+        // UI element colors
+        buttonBg: 'rgba(255,255,255,0.2)',
+        buttonBorder: 'rgba(255,255,255,0.3)',
+        toggleBg: '#2f4a45',
+        toggleBgChecked: '#213632',
+        toggleButton: '#43645D',
+        toggleHover: '#2a413c',
+        
+        // Border colors
+        popupBorder: 'rgba(91, 142, 131, 0.3)',
+        popupBorderHover: 'rgba(91, 142, 131, 0.5)',
+        tagBorder: '#43645D',
+        tagBg: 'rgba(255, 255, 255, 0.03)',
+        
+        // Map controls
+        mapControlBg: '#0A1B19',
+        mapControlColor: '#43645D',
+        mapControlHoverBg: '#43645D',
+        mapControlHoverColor: '#0A1B19'
+    },
+    light: {
+        // Background colors
+        bodyBg: '#f8f9fa',
+        headerBg: 'linear-gradient(135deg, #9fb7b3 0%, #9fb7b3 100%)',
+        mapBg: '#b0bfbd',
+        legendBg: '#9fb7b3',
+        popupBg: '#9fb7b3',
+        
+        // Text colors
+         headerText: '#4B6360',
+        legendText: '#4B6360',
+        legendSubtext: '#4B6360',
+        popupText: '#4B6360',
+        popupTitle: '#4B6360',
+        
+        // UI element colors
+        buttonBg: 'rgba(255,255,255,0.2)',
+        buttonBorder: 'rgba(255,255,255,0.3)',
+        toggleBg: 'rgba(255,255,255,0.3)',
+        toggleBgChecked: 'rgba(255,255,255,0.5)',
+        toggleButton: '#4B6360',
+        toggleHover: 'rgba(255,255,255,0.4)',
+        
+        // Border colors
+        popupBorder: 'rgba(255, 255, 255, 0.3)',
+        popupBorderHover: 'rgba(255, 255, 255, 0.5)',
+        tagBorder: 'rgba(255, 255, 255, 0.5)',
+        tagBg: 'rgba(255, 255, 255, 0.1)',
+        
+        // Map controls
+        mapControlBg: '#9fb7b3',
+        mapControlColor: '#4B6360',
+        mapControlHoverBg: '#4B6360',
+        mapControlHoverColor: '#9fb7b3'
+    }
+};
+
+// Theme application functions
+function applyTheme() {
+    const theme = isLightTheme ? 'light' : 'dark';
+    const colors = THEME_COLORS[theme];
+    
+    // Apply body background
+    document.body.style.backgroundColor = colors.bodyBg;
+    
+    // Apply header styles
+    const header = document.querySelector('.header');
+    if (header) {
+        header.style.background = colors.headerBg;
+        header.style.color = colors.headerText;
+    }
+    
+    // Apply map container background
+    const mapContainer = document.querySelector('.map-container');
+    if (mapContainer) {
+        mapContainer.style.backgroundColor = colors.mapBg;
+    }
+    
+    // Apply map canvas background via CSS custom property
+    document.documentElement.style.setProperty('--map-bg', colors.mapBg);
+    
+    // Apply legend styles
+    const legend = document.querySelector('.legend');
+    if (legend) {
+        legend.style.backgroundColor = colors.legendBg;
+    }
+    
+    const legendH4 = document.querySelector('.legend h4');
+    if (legendH4) {
+        legendH4.style.color = colors.legendText;
+    }
+    
+    const legendItems = document.querySelectorAll('.legend-item');
+    legendItems.forEach(item => {
+        item.style.color = colors.legendSubtext;
+    });
+    
+    // Apply button styles
+    const buttons = document.querySelectorAll('.btn');
+    buttons.forEach(button => {
+        button.style.background = colors.buttonBg;
+        button.style.borderColor = colors.buttonBorder;
+    });
+    
+    // Apply toggle switch styles
+    const toggleSliders = document.querySelectorAll('.toggle-slider');
+    toggleSliders.forEach(slider => {
+        slider.style.backgroundColor = colors.toggleBg;
+    });
+    
+    const toggleButtons = document.querySelectorAll('.toggle-slider:before');
+    toggleButtons.forEach(button => {
+        button.style.backgroundColor = colors.toggleButton;
+    });
+    
+    // Apply popup styles via CSS custom properties
+    document.documentElement.style.setProperty('--popup-bg', colors.popupBg);
+    document.documentElement.style.setProperty('--popup-text', colors.popupText);
+    document.documentElement.style.setProperty('--popup-title', colors.popupTitle);
+    document.documentElement.style.setProperty('--popup-border', colors.popupBorder);
+    document.documentElement.style.setProperty('--popup-border-hover', colors.popupBorderHover);
+    document.documentElement.style.setProperty('--tag-border', colors.tagBorder);
+    document.documentElement.style.setProperty('--tag-bg', colors.tagBg);
+    
+    // Apply toggle switch styles via CSS custom properties
+    document.documentElement.style.setProperty('--toggle-bg', colors.toggleBg);
+    document.documentElement.style.setProperty('--toggle-bg-checked', colors.toggleBgChecked);
+    document.documentElement.style.setProperty('--toggle-button', colors.toggleButton);
+    document.documentElement.style.setProperty('--toggle-hover', colors.toggleHover);
+    
+    // Apply map control styles
+    document.documentElement.style.setProperty('--map-control-bg', colors.mapControlBg);
+    document.documentElement.style.setProperty('--map-control-color', colors.mapControlColor);
+    document.documentElement.style.setProperty('--map-control-hover-bg', colors.mapControlHoverBg);
+    document.documentElement.style.setProperty('--map-control-hover-color', colors.mapControlHoverColor);
+}
+
+function toggleTheme() {
+    isLightTheme = !isLightTheme;
+    applyTheme();
+    
+    // Save theme preference to localStorage
+    localStorage.setItem('isLightTheme', isLightTheme.toString());
+    
+    // Update theme toggle button text
+    const themeToggleBtn = document.getElementById('themeToggle');
+    if (themeToggleBtn) {
+        themeToggleBtn.textContent = isLightTheme ? '🌙 Dark' : '☀️ Light';
+    }
+}
+
+function loadThemePreference() {
+    const savedTheme = localStorage.getItem('isLightTheme');
+    if (savedTheme !== null) {
+        isLightTheme = savedTheme === 'true';
+    }
+    applyTheme();
+    
+    // Update theme toggle button text
+    const themeToggleBtn = document.getElementById('themeToggle');
+    if (themeToggleBtn) {
+        themeToggleBtn.textContent = isLightTheme ? '🌙 Dark' : '☀️ Light';
+    }
+}
+
+// Portfolio color functions
+function generateRandomColor() {
+    const colors = [
+        '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
+        '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
+        '#F8C471', '#82E0AA', '#F1948A', '#85C1E9', '#D7BDE2',
+        '#A9DFBF', '#F9E79F', '#D5DBDB', '#AED6F1', '#A3E4D7'
+    ];
+    return colors[Math.floor(Math.random() * colors.length)];
+}
+
+function generatePortfolioColors(gpPoints) {
+    portfolioColorMap = {};
+    
+    // Specific colors for the first 3 portfolios
+    const specificColors = ['#23F2F6', '#F85555', '#F4A300'];
+    let specificColorIndex = 0;
+    
+    gpPoints.forEach(gp => {
+        const portfolioName = gp['Company Name'] || gp['company name'] || gp['Company'] || '';
+        if (portfolioName && !portfolioColorMap[portfolioName]) {
+            // Assign specific colors to first 3 portfolios
+            if (specificColorIndex < specificColors.length) {
+                portfolioColorMap[portfolioName] = specificColors[specificColorIndex];
+                specificColorIndex++;
+            } else {
+                // Use random color from palette for additional portfolios
+                portfolioColorMap[portfolioName] = generateRandomColor();
+            }
+        }
+    });
+    console.log('Generated portfolio colors:', portfolioColorMap);
+}
+
+function togglePortfolioColor() {
+    isPortfolioColorMode = !isPortfolioColorMode;
+    
+    // Update button text
+    const portfolioColorToggleBtn = document.getElementById('portfolioColorToggle');
+    if (portfolioColorToggleBtn) {
+        portfolioColorToggleBtn.textContent = isPortfolioColorMode ? 'Color by Category' : 'Color by Portfolio';
+    }
+    
+    // Save preference to localStorage
+    localStorage.setItem('isPortfolioColorMode', isPortfolioColorMode.toString());
+    
+    // Refresh the map with new coloring
+    refreshMapColoring();
+}
+
+function getPointColor(tabName, config) {
+    if (!isPortfolioColorMode || (tabName !== 'Portfolio Companies' && tabName !== 'General Partner Location')) {
+        return config.color;
+    }
+    
+    // For portfolio mode, we need to use a data-driven approach
+    // This will be handled in the paint expression
+    return config.color; // Fallback, actual logic in paint expression
+}
+
+function getPortfolioColorExpression(tabName) {
+    if (!isPortfolioColorMode || (tabName !== 'Portfolio Companies' && tabName !== 'General Partner Location')) {
+        return null; // Use default color
+    }
+    
+    if (tabName === 'General Partner Location') {
+        // For GP points, use the company name to get portfolio color
+        return [
+            'case',
+            ['has', 'portfolioColor'],
+            ['get', 'portfolioColor'],
+            '#FFD600' // Default yellow
+        ];
+    } else if (tabName === 'Portfolio Companies') {
+        // For portfolio companies, use the portfolio name to get color
+        return [
+            'case',
+            ['has', 'portfolioColor'],
+            ['get', 'portfolioColor'],
+            '#006FFF' // Default blue
+        ];
+    }
+    
+    return null;
+}
+
+function getGPStrokeColor(tabName, config) {
+    if (isPortfolioColorMode && tabName === 'General Partner Location') {
+        // Black stroke for GP points in portfolio mode
+        return '#000000';
+    }
+    // Use default stroke color for other cases
+    return getPortfolioColorExpression(tabName) || config.color;
+}
+
+function getGPStrokeWidth(tabName, config) {
+    if (isPortfolioColorMode && tabName === 'General Partner Location') {
+        // Black stroke width for GP points in portfolio mode
+        return [
+            'case',
+            ['boolean', ['feature-state', 'hover'], false],
+            2, // Thicker stroke on hover
+            1  // Normal stroke width
+        ];
+    }
+    // Use default stroke width for other cases
+    return [
+        'case',
+        ['boolean', ['feature-state', 'hover'], false],
+        2,
+        config.strokeWidth
+    ];
+}
+
+function refreshMapColoring() {
+    // Only reload GP and Portfolio Company layers to preserve visibility toggles
+    if (map) {
+        // Store current visibility states for all layers
+        const layerVisibilityStates = {};
+        const layersToCheck = [
+            'points-allocator-lps',
+            'points-collective-locations', 
+            'points-direct-investments',
+            'points-general-partner-location',
+            'points-portfolio-companies',
+            'connection-lines',
+            'portfolio-connection-lines',
+            'collective-gp-connection-lines',
+            'direct-investment-connection-lines'
+        ];
+        
+        // Store current visibility states
+        layersToCheck.forEach(layerId => {
+            if (map.getLayer(layerId)) {
+                const visibility = map.getLayoutProperty(layerId, 'visibility');
+                layerVisibilityStates[layerId] = visibility;
+            }
+        });
+        
+        // Reload only the data that affects coloring
+        reloadColoringLayers();
+        
+        // Restore visibility states after a short delay to ensure layers are loaded
+        setTimeout(() => {
+            Object.entries(layerVisibilityStates).forEach(([layerId, visibility]) => {
+                if (map.getLayer(layerId)) {
+                    map.setLayoutProperty(layerId, 'visibility', visibility);
+                }
+            });
+        }, 100);
+    }
+}
+
+async function reloadColoringLayers() {
+    // Only reload GP and Portfolio Company data and their connections
+    try {
+        // Reload GP points
+        if (gpPoints && gpPoints.length > 0) {
+            const gpConfig = TABS_CONFIG['General Partner Location'];
+            displayPoints(gpPoints, 'General Partner Location', gpConfig);
+        }
+        
+        // Reload Portfolio Company points
+        if (portfolioPoints && portfolioPoints.length > 0) {
+            const portfolioConfig = TABS_CONFIG['Portfolio Companies'];
+            displayPoints(portfolioPoints, 'Portfolio Companies', portfolioConfig);
+        }
+        
+        // Reload portfolio connection lines
+        if (portfolioPoints && portfolioPoints.length > 0 && gpPoints && gpPoints.length > 0) {
+            createPortfolioConnections(portfolioPoints, gpPoints);
+        }
+        
+        // Set proper draw order
+        setLayerDrawOrder();
+        
+        console.log('Reloaded coloring layers only');
+    } catch (error) {
+        console.error('Error reloading coloring layers:', error);
+    }
+}
+
 // Define all tabs and their styling
 const TABS_CONFIG = {
   
@@ -13,7 +391,7 @@ const TABS_CONFIG = {
         // opacity: 0.3,
         opacity: 0.5,
         strokeOpacity: 0.9,
-        radius: 4
+        radius: 5
     },
     'Direct Investments': {
         color: '#9B59B6', // Purple
@@ -37,15 +415,15 @@ const TABS_CONFIG = {
         color: '#03B570', // Teal
         strokeColor: '#03B570',
         strokeWidth: 5,
-        opacity: 0,
+        opacity: 1,
         strokeOpacity: 1,
-        radius: 8
+        radius: 2
     },
     'Allocator LPs': {
         color: '#ED5FAB', 
         strokeColor: '#ED5FAB',
-        strokeWidth: 1,
-        opacity: 0.2,
+        strokeWidth: 1.5,
+        opacity: 0.3,
         strokeOpacity: 0.9,
         radius: ['interpolate', ['linear'], ['get', 'AUM ($bn)'], 1, 16, 300, 32]
     }
@@ -73,6 +451,7 @@ const DRAW_ORDER = {
     'points-direct-investments': 30,
     'points-general-partner-location': 40,
     'points-collective-locations-shadow': 45, // Shadow layer beneath collective points
+    'points-collective-locations-small-circle': 47, // Small black circle beneath collective points
     'points-collective-locations': 50
 };
 
@@ -100,6 +479,18 @@ const closeSidebarBtn = document.getElementById('closeSidebar');
 // Initialize the application
 async function init() {
     try {
+        // Load theme preference first
+        loadThemePreference();
+        
+        // Always default to category mode on page load
+        isPortfolioColorMode = false;
+        
+        // Update portfolio color button text
+        const portfolioColorToggleBtn = document.getElementById('portfolioColorToggle');
+        if (portfolioColorToggleBtn) {
+            portfolioColorToggleBtn.textContent = 'Color by Portfolio';
+        }
+        
         // Check if Mapbox token is set
         if (MAPBOX_ACCESS_TOKEN === 'YOUR_MAPBOX_ACCESS_TOKEN_HERE') {
             throw new Error('Please set your Mapbox access token in script.js');
@@ -110,7 +501,8 @@ async function init() {
         
         map = new mapboxgl.Map({
             container: 'map',
-            style: 'mapbox://styles/ptrszkwcz/cmewareb800lg01si3ct95j48',
+            // style: 'mapbox://styles/ptrszkwcz/cmewareb800lg01si3ct95j48',
+            style: 'mapbox://styles/ptrszkwcz/cmfe3511o006w01s49mjcbg80',
             center: [0,9], 
             zoom: 1.8,
             minZoom: 1.8,
@@ -145,11 +537,12 @@ async function init() {
 async function loadAllDataFromGoogleSheets() {
     try {
         let totalPoints = 0;
-        let allocatorPoints = [];
-        let collectivePoints = [];
-        let portfolioPoints = [];
-        let gpPoints = [];
-        let directInvestmentPoints = [];
+        // Reset global point arrays
+        allocatorPoints = [];
+        collectivePoints = [];
+        portfolioPoints = [];
+        gpPoints = [];
+        directInvestmentPoints = [];
         
         for (const [tabName, config] of Object.entries(TABS_CONFIG)) {
             try {
@@ -190,6 +583,8 @@ async function loadAllDataFromGoogleSheets() {
                         portfolioPoints = validData;
                     } else if (tabName === 'General Partner Location') {
                         gpPoints = validData;
+                        // Generate portfolio colors when GP points are loaded
+                        generatePortfolioColors(validData);
                     } else if (tabName === 'Direct Investments') {
                         directInvestmentPoints = validData;
                     }
@@ -339,6 +734,25 @@ function displayPoints(data, tabName, config) {
                 }
             }
             
+            // Determine portfolio color for this point
+            let portfolioColor = null;
+            if (isPortfolioColorMode && (tabName === 'Portfolio Companies' || tabName === 'General Partner Location')) {
+                if (tabName === 'General Partner Location') {
+                    const companyName = point['Company Name'] || point['company name'] || point['Company'] || '';
+                    portfolioColor = portfolioColorMap[companyName] || null;
+                } else if (tabName === 'Portfolio Companies') {
+                    const portfolioName = point['portfolio'] || point['Portfolio'] || '';
+                    // Find matching GP to get portfolio color
+                    for (const [gpName, color] of Object.entries(portfolioColorMap)) {
+                        if (portfolioName.toLowerCase().includes(gpName.toLowerCase()) || 
+                            gpName.toLowerCase().includes(portfolioName.toLowerCase())) {
+                            portfolioColor = color;
+                            break;
+                        }
+                    }
+                }
+            }
+            
             return {
                 type: 'Feature',
                 geometry: {
@@ -349,7 +763,8 @@ function displayPoints(data, tabName, config) {
                     ...properties,
                     id: index,
                     tabName: tabName,
-                    'AUM ($bn)': foundAUM || 1
+                    'AUM ($bn)': foundAUM || 1,
+                    portfolioColor: portfolioColor
                 }
             };
         })
@@ -390,11 +805,48 @@ function displayPoints(data, tabName, config) {
             layout: {},
             paint: {
                 'circle-radius': config.radius * 4, // Make shadow larger than main point
-                'circle-color': '#000000', // Black shadow
-                'circle-opacity': 0.5, // Subtle shadow opacity
+                'circle-color': '#324945', // Black shadow
+                'circle-opacity': 0.8, // Subtle shadow opacity
                 'circle-blur': 1 // Blur the shadow for soft effect
             }
         });
+        
+        // Add small black circle beneath shadow layer
+        const smallCircleLayerId = `${layerId}-small-circle`;
+        const smallCircleSourceId = `${sourceId}-small-circle`;
+        
+        // Clear existing small circle layer and source
+        if (map.getLayer(smallCircleLayerId)) {
+            map.removeLayer(smallCircleLayerId);
+        }
+        if (map.getSource(smallCircleSourceId)) {
+            map.removeSource(smallCircleSourceId);
+        }
+        
+        // Add small circle source (same data as main points)
+        map.addSource(smallCircleSourceId, {
+            type: 'geojson',
+            data: geojsonData,
+            promoteId: 'id'
+        });
+        
+        // Add small black circle layer
+        map.addLayer({
+            id: smallCircleLayerId,
+            type: 'circle',
+            source: smallCircleSourceId,
+            layout: {},
+            paint: {
+                'circle-radius': 7, // Make small circle half the size of main point
+                'circle-stroke-width': 3,
+                'circle-stroke-color': '#324945',
+                'circle-stroke-opacity': 1,
+                'circle-color': '#000000', // Black circle
+                'circle-opacity': 0.01, // More opaque than shadow
+                'circle-blur': 0 // No blur for sharp edges
+            }
+        });
+
     }
     
     // Add main circle layer
@@ -405,14 +857,9 @@ function displayPoints(data, tabName, config) {
         layout: {},
         paint: {
             'circle-radius': config.radius,
-            'circle-color': config.color,
-            'circle-stroke-color': config.color,
-            'circle-stroke-width': [
-                'case',
-                ['boolean', ['feature-state', 'hover'], false],
-                2,
-                config.strokeWidth
-            ],
+            'circle-color': getPortfolioColorExpression(tabName) || config.color,
+            'circle-stroke-color': getGPStrokeColor(tabName, config),
+            'circle-stroke-width': getGPStrokeWidth(tabName, config),
             'circle-stroke-opacity': [
                 'case',
                 ['boolean', ['feature-state', 'hover'], false],
@@ -605,7 +1052,7 @@ function createConnectionLines(allocatorPoints, collectivePoints) {
         },
         paint: {
             'line-color': '#ED5FAB',
-            'line-width': 1,
+            'line-width': 1.5,
             'line-opacity': 0.3
         }
     });
@@ -664,6 +1111,10 @@ function createPortfolioConnections(portfolioPoints, gpPoints) {
                 const gpLat = parseFloat(nearestGP.latitude || nearestGP.lat || nearestGP.Lat || nearestGP.Latitude || nearestGP.LAT);
                 const gpLng = parseFloat(nearestGP.longitude || nearestGP.lng || nearestGP.lon || nearestGP.Lon || nearestGP.long || nearestGP.Longitude || nearestGP.LNG);
                 
+                // Get portfolio color for the connection line
+                const gpName = nearestGP['Company Name'] || nearestGP['company name'] || nearestGP['Company'] || 'Unknown GP';
+                const connectionColor = isPortfolioColorMode ? (portfolioColorMap[gpName] || '#006FFF') : '#006FFF';
+                
                 connections.push({
                     type: 'Feature',
                     geometry: {
@@ -676,8 +1127,9 @@ function createPortfolioConnections(portfolioPoints, gpPoints) {
                     properties: {
                         id: `portfolio-connection-${portfolioIndex}`,
                         portfolioName: portfolioName,
-                        gpName: nearestGP['Company Name'] || nearestGP['company name'] || nearestGP['Company'] || 'Unknown GP',
-                        distance: Math.round(shortestDistance)
+                        gpName: gpName,
+                        distance: Math.round(shortestDistance),
+                        connectionColor: connectionColor
                     }
                 });
             }
@@ -705,8 +1157,13 @@ function createPortfolioConnections(portfolioPoints, gpPoints) {
             'line-cap': 'round'
         },
         paint: {
-            'line-color': '#006FFF', // Blue to match Portfolio Companies
-            'line-width': 1,
+            'line-color': [
+                'case',
+                ['has', 'connectionColor'],
+                ['get', 'connectionColor'],
+                '#006FFF' // Default blue
+            ],
+            'line-width': 1.5,
             'line-opacity': 0.4
         }
     });
@@ -800,7 +1257,7 @@ function createCollectiveGPConnections(collectivePoints, gpPoints) {
         },
         paint: {
             'line-color': '#FFD600', // Yellow
-            'line-width': 1,
+            'line-width': 1.5,
             'line-opacity': 0.3
         }
     });
@@ -816,7 +1273,7 @@ function createCollectiveGPConnections(collectivePoints, gpPoints) {
         },
         paint: {
             'line-color': '#FFD600', // Yellow
-            'line-width': 3,
+            'line-width': 1.5,
             'line-opacity': [
                 'case',
                 ['boolean', ['feature-state', 'hover'], false],
@@ -1015,7 +1472,7 @@ function createDirectInvestmentConnections(directInvestmentPoints, collectivePoi
         source: directInvestmentConnectionSourceId,
         paint: {
             'line-color': '#9B59B6', // Same color as direct investment points
-            'line-width': 1,
+            'line-width': 1.5,
             'line-opacity': 0.3
         }
     });
@@ -1257,11 +1714,15 @@ function setupLegendToggles() {
                     console.error(`Layer ${targetLayerId} does not exist on map!`);
                 }
                 
-                // For collective points, also toggle the shadow layer
+                // For collective points, also toggle the shadow and small circle layers
                 if (targetLayerId === 'points-collective-locations') {
                     const shadowLayerId = 'points-collective-locations-shadow';
+                    const smallCircleLayerId = 'points-collective-locations-small-circle';
                     if (map.getLayer(shadowLayerId)) {
                         map.setLayoutProperty(shadowLayerId, 'visibility', visibility);
+                    }
+                    if (map.getLayer(smallCircleLayerId)) {
+                        map.setLayoutProperty(smallCircleLayerId, 'visibility', visibility);
                     }
                 }
                 
