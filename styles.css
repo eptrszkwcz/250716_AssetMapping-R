@@ -56,6 +56,117 @@ body {
     transform: translateY(-1px);
 }
 
+/* Dropdown styles */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-btn {
+    position: relative;
+}
+
+.dropdown-btn::after {
+    content: '▼';
+    margin-left: 0.5rem;
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+}
+
+.dropdown-btn.open::after {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    background: rgb(159, 183, 179);
+    border: 1px solid rgba(91, 142, 131, 0.3);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    width: 340px;
+    min-width: 280px;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.dropdown-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    /* color: #5B8E83; */
+    color: rgb(75, 99, 96)
+    border-bottom: 1px solid rgba(91, 142, 131, 0.1);
+    gap: 0.75rem;
+}
+
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.dropdown-item:hover {
+    background: rgba(91, 142, 131, 0.1);
+}
+
+.dropdown-item .legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.dropdown-item span:not(.legend-color) {
+    flex: 1;
+    font-size: 0.9rem;
+}
+
+.dropdown-item .toggle-switch {
+    margin: 0;
+    flex-shrink: 0;
+}
+
+/* Light theme dropdown styles */
+body.light-theme .dropdown-menu {
+    background: #f8f9fa;
+    border: 1px solid rgba(75, 99, 96, 0.3);
+    color: #4B6360;
+}
+
+body.light-theme .dropdown-item {
+    color: #4B6360;
+    border-bottom: 1px solid rgba(75, 99, 96, 0.1);
+}
+
+body.light-theme .dropdown-item:hover {
+    background: rgba(75, 99, 96, 0.1);
+}
+
+/* Light theme legend styles */
+body.light-theme .legend {
+    background: #f8f9fa;
+    border: 1px solid rgba(75, 99, 96, 0.3);
+}
+
+body.light-theme .legend h4 {
+    color: #4B6360;
+}
+
+body.light-theme .legend-item {
+    color: #4B6360;
+}
+
 .status {
     font-size: 0.9rem;
     opacity: 0.9;
@@ -263,6 +374,15 @@ body {
 }
 
 .legend-item:has(input:checked) {
+    opacity: 1;
+}
+
+/* Fade dropdown items when toggle is off */
+.dropdown-item:has(input:not(:checked)) {
+    opacity: 0.3;
+}
+
+.dropdown-item:has(input:checked) {
     opacity: 1;
 }
 

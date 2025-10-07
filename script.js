@@ -217,9 +217,13 @@ function generatePortfolioColors(gpPoints) {
     const specificColors = ['#23F2F6', '#F85555', '#F4A300'];
     let specificColorIndex = 0;
     
-    gpPoints.forEach(gp => {
-        const portfolioName = gp['Company Name'] || gp['company name'] || gp['Company'] || '';
-        if (portfolioName && !portfolioColorMap[portfolioName]) {
+    // Get unique portfolio names
+    const uniquePortfolioNames = [...new Set(gpPoints.map(gp => {
+        return gp['Company Name'] || gp['company name'] || gp['Company'] || '';
+    }).filter(name => name.trim() !== ''))];
+    
+    uniquePortfolioNames.forEach(portfolioName => {
+        if (!portfolioColorMap[portfolioName]) {
             // Assign specific colors to first 3 portfolios
             if (specificColorIndex < specificColors.length) {
                 portfolioColorMap[portfolioName] = specificColors[specificColorIndex];
@@ -230,7 +234,12 @@ function generatePortfolioColors(gpPoints) {
             }
         }
     });
+    
+    // Store portfolio names for dropdown
+    window.portfolioNames = uniquePortfolioNames.slice(0, 3); // Only first 3 for now
+    
     console.log('Generated portfolio colors:', portfolioColorMap);
+    console.log('Portfolio names:', window.portfolioNames);
 }
 
 function togglePortfolioColor() {
@@ -242,11 +251,79 @@ function togglePortfolioColor() {
         portfolioColorToggleBtn.textContent = isPortfolioColorMode ? 'Color by Category' : 'Color by Portfolio';
     }
     
+    // Switch dropdown content
+    updateDropdownContent();
+    
     // Save preference to localStorage
     localStorage.setItem('isPortfolioColorMode', isPortfolioColorMode.toString());
     
     // Refresh the map with new coloring
     refreshMapColoring();
+}
+
+function updateDropdownContent() {
+    const categoryContent = document.getElementById('categoryModeContent');
+    const portfolioContent = document.getElementById('portfolioModeContent');
+    
+    // Legend content elements
+    const legendCategoryContent = document.getElementById('legendCategoryModeContent');
+    const legendPortfolioContent = document.getElementById('legendPortfolioModeContent');
+    
+    if (isPortfolioColorMode) {
+        // Show portfolio toggles, hide category toggles
+        categoryContent.style.display = 'none';
+        portfolioContent.style.display = 'block';
+        
+        // Show portfolio legend items, hide category legend items
+        legendCategoryContent.style.display = 'none';
+        legendPortfolioContent.style.display = 'block';
+        
+        // Update portfolio names if available
+        updatePortfolioNames();
+        updateLegendPortfolioNames();
+        
+        // Initialize portfolio visibility state
+        initializePortfolioVisibility();
+    } else {
+        // Show category toggles, hide portfolio toggles
+        categoryContent.style.display = 'block';
+        portfolioContent.style.display = 'none';
+        
+        // Show category legend items, hide portfolio legend items
+        legendCategoryContent.style.display = 'block';
+        legendPortfolioContent.style.display = 'none';
+    }
+}
+
+function updatePortfolioNames() {
+    if (!window.portfolioNames || window.portfolioNames.length === 0) return;
+    
+    const portfolioItems = document.querySelectorAll('#portfolioModeContent .dropdown-item');
+    const portfolioColors = ['#23F2F6', '#F85555', '#F4A300'];
+    
+    portfolioItems.forEach((item, index) => {
+        if (index < window.portfolioNames.length) {
+            const nameSpan = item.querySelector('span:not(.legend-color)');
+            if (nameSpan) {
+                nameSpan.textContent = window.portfolioNames[index];
+            }
+        }
+    });
+}
+
+function updateLegendPortfolioNames() {
+    if (!window.portfolioNames || window.portfolioNames.length === 0) return;
+    
+    const legendPortfolioItems = document.querySelectorAll('#legendPortfolioModeContent .legend-item');
+    
+    legendPortfolioItems.forEach((item, index) => {
+        if (index < window.portfolioNames.length) {
+            const nameSpan = item.querySelector('span:not(.legend-color)');
+            if (nameSpan) {
+                nameSpan.textContent = window.portfolioNames[index];
+            }
+        }
+    });
 }
 
 function getPointColor(tabName, config) {
@@ -351,6 +428,35 @@ function refreshMapColoring() {
         }, 100);
     }
 }
+
+// Dropdown functionality
+function toggleDropdown() {
+    console.log('toggleDropdown called'); // Debug log
+    const dropdown = document.getElementById('categoryDropdownMenu');
+    const button = document.getElementById('categoryDropdown');
+    
+    if (dropdown.classList.contains('show')) {
+        dropdown.classList.remove('show');
+        button.classList.remove('open');
+    } else {
+        dropdown.classList.add('show');
+        button.classList.add('open');
+    }
+}
+
+// Make sure function is globally accessible
+window.toggleDropdown = toggleDropdown;
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (event) => {
+    const dropdown = document.getElementById('categoryDropdownMenu');
+    const button = document.getElementById('categoryDropdown');
+    
+    if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+        dropdown.classList.remove('show');
+        button.classList.remove('open');
+    }
+});
 
 async function reloadColoringLayers() {
     // Only reload GP and Portfolio Company data and their connections
@@ -490,6 +596,9 @@ async function init() {
         if (portfolioColorToggleBtn) {
             portfolioColorToggleBtn.textContent = 'Color by Portfolio';
         }
+        
+        // Set initial dropdown content
+        updateDropdownContent();
         
         // Check if Mapbox token is set
         if (MAPBOX_ACCESS_TOKEN === 'YOUR_MAPBOX_ACCESS_TOKEN_HERE') {
@@ -802,7 +911,9 @@ function displayPoints(data, tabName, config) {
             id: shadowLayerId,
             type: 'circle',
             source: shadowSourceId,
-            layout: {},
+            layout: {
+                'visibility': 'visible'
+            },
             paint: {
                 'circle-radius': config.radius * 4, // Make shadow larger than main point
                 'circle-color': '#324945', // Black shadow
@@ -835,7 +946,9 @@ function displayPoints(data, tabName, config) {
             id: smallCircleLayerId,
             type: 'circle',
             source: smallCircleSourceId,
-            layout: {},
+            layout: {
+                'visibility': 'visible'
+            },
             paint: {
                 'circle-radius': 7, // Make small circle half the size of main point
                 'circle-stroke-width': 3,
@@ -854,7 +967,9 @@ function displayPoints(data, tabName, config) {
         id: layerId,
         type: 'circle',
         source: sourceId,
-        layout: {},
+        layout: {
+            'visibility': 'visible'
+        },
         paint: {
             'circle-radius': config.radius,
             'circle-color': getPortfolioColorExpression(tabName) || config.color,
@@ -878,6 +993,11 @@ function displayPoints(data, tabName, config) {
     // Add hover event to the layer for simple popup
     map.on('mouseenter', layerId, (e) => {
         const properties = e.features[0].properties;
+        
+        // Check if this point should be interactive
+        if (!isPointInteractive(properties)) {
+            return; // Don't show popup for hidden points
+        }
         
         // Close any existing hover popup
         if (currentPopup) {
@@ -922,6 +1042,11 @@ function displayPoints(data, tabName, config) {
     map.on('click', layerId, (e) => {
         const properties = e.features[0].properties;
         
+        // Check if this point should be interactive
+        if (!isPointInteractive(properties)) {
+            return; // Don't show popup for hidden points
+        }
+        
         // Close any existing hover popup
         if (currentPopup) {
             currentPopup.remove();
@@ -956,6 +1081,13 @@ function displayPoints(data, tabName, config) {
     let hoveredFeatureId = null;
     
     map.on('mouseenter', layerId, (e) => {
+        const properties = e.features[0].properties;
+        
+        // Check if this point should be interactive
+        if (!isPointInteractive(properties)) {
+            return; // Don't apply hover effects to hidden points
+        }
+        
         map.getCanvas().style.cursor = 'pointer';
         
         // Set hover state for the specific feature
@@ -1048,7 +1180,8 @@ function createConnectionLines(allocatorPoints, collectivePoints) {
         source: connectionSourceId,
         layout: {
             'line-join': 'round',
-            'line-cap': 'round'
+            'line-cap': 'round',
+            'visibility': 'none' // Start hidden, will be shown by updateConnectionLineVisibility()
         },
         paint: {
             'line-color': '#ED5FAB',
@@ -1154,7 +1287,8 @@ function createPortfolioConnections(portfolioPoints, gpPoints) {
         source: portfolioConnectionSourceId,
         layout: {
             'line-join': 'round',
-            'line-cap': 'round'
+            'line-cap': 'round',
+            'visibility': 'none' // Start hidden, will be shown by updateConnectionLineVisibility()
         },
         paint: {
             'line-color': [
@@ -1253,7 +1387,8 @@ function createCollectiveGPConnections(collectivePoints, gpPoints) {
         source: collectiveGPConnectionSourceId,
         layout: {
             'line-join': 'round',
-            'line-cap': 'round'
+            'line-cap': 'round',
+            'visibility': 'none' // Start hidden, will be shown by updateConnectionLineVisibility()
         },
         paint: {
             'line-color': '#FFD600', // Yellow
@@ -1269,7 +1404,8 @@ function createCollectiveGPConnections(collectivePoints, gpPoints) {
         source: collectiveGPConnectionSourceId,
         layout: {
             'line-join': 'round',
-            'line-cap': 'round'
+            'line-cap': 'round',
+            'visibility': 'none' // Start hidden, will be shown by updateConnectionLineVisibility()
         },
         paint: {
             'line-color': '#FFD600', // Yellow
@@ -1470,6 +1606,9 @@ function createDirectInvestmentConnections(directInvestmentPoints, collectivePoi
         id: directInvestmentConnectionLayerId,
         type: 'line',
         source: directInvestmentConnectionSourceId,
+        layout: {
+            'visibility': 'none' // Start hidden, will be shown by updateConnectionLineVisibility()
+        },
         paint: {
             'line-color': '#9B59B6', // Same color as direct investment points
             'line-width': 1.5,
@@ -1696,13 +1835,7 @@ function setupLegendToggles() {
             
             
             try {
-                // Define which connection lines correspond to each point type
-                const layerConnections = {
-                    'points-portfolio-companies': ['portfolio-connection-lines', 'portfolio-connection-lines-hover'],
-                    'points-allocator-lps': ['connection-lines', 'connection-lines-hover'],
-                    'points-general-partner-location': ['collective-gp-connection-lines', 'collective-gp-connection-lines-hover'],
-                    'points-direct-investments': ['direct-investment-connection-lines']
-                };
+                // Connection line visibility will be handled by updateConnectionLineVisibility()
                 
                 const visibility = isVisible ? 'visible' : 'none';
                 
@@ -1726,19 +1859,9 @@ function setupLegendToggles() {
                     }
                 }
                 
-                // Toggle corresponding connection lines
-                const connectionLayers = layerConnections[targetLayerId];
-                if (connectionLayers) {
-                    connectionLayers.forEach(connectionLayerId => {
-                        if (map.getLayer(connectionLayerId)) {
-                            map.setLayoutProperty(connectionLayerId, 'visibility', visibility);
-                            
-                        } else {
-                            console.warn(`Connection layer ${connectionLayerId} does not exist on map!`);
-                        }
-                    });
-                } else {
-                }
+                // Update connection line visibility based on both connected point types
+                console.log(`🔄 Calling updateConnectionLineVisibility from toggle for layer: ${targetLayerId}`);
+                updateConnectionLineVisibility();
                 
             } catch (error) {
                 console.error(`Error toggling layer ${targetLayerId}:`, error);
@@ -1746,6 +1869,206 @@ function setupLegendToggles() {
         });
     });
     
+    // Setup portfolio toggles
+    setupPortfolioToggles();
+    
+    // Initialize connection line visibility after all data is loaded
+    console.log('🎯 Calling updateConnectionLineVisibility from setupLegendToggles');
+    updateConnectionLineVisibility();
+}
+
+// Setup portfolio toggle functionality
+function setupPortfolioToggles() {
+    const portfolioToggleInputs = document.querySelectorAll('.toggle-switch input[data-portfolio]');
+    
+    portfolioToggleInputs.forEach((toggle) => {
+        toggle.addEventListener('change', (e) => {
+            const portfolioId = e.target.getAttribute('data-portfolio');
+            const isVisible = e.target.checked;
+            
+            console.log(`Toggling portfolio ${portfolioId} visibility to ${isVisible}`);
+            
+            // Toggle portfolio visibility based on portfolio ID
+            togglePortfolioVisibility(portfolioId, isVisible);
+        });
+    });
+}
+
+// Toggle individual portfolio visibility
+// Initialize portfolio visibility state
+function initializePortfolioVisibility() {
+    if (!window.portfolioVisibility) {
+        window.portfolioVisibility = {};
+    }
+    
+    // Initialize all portfolios as visible by default
+    const portfolioColors = ['#23F2F6', '#F85555', '#F4A300'];
+    portfolioColors.forEach(color => {
+        if (window.portfolioVisibility[color] === undefined) {
+            window.portfolioVisibility[color] = true;
+        }
+    });
+    
+    console.log('Initialized portfolio visibility:', window.portfolioVisibility);
+}
+
+// Check if a point should be interactive (visible and hoverable)
+function isPointInteractive(properties) {
+    // If not in portfolio color mode, all points are interactive
+    if (!isPortfolioColorMode) {
+        return true;
+    }
+    
+    // If in portfolio color mode, check if the point's portfolio is visible
+    const portfolioColor = properties.portfolioColor;
+    if (portfolioColor && window.portfolioVisibility) {
+        return window.portfolioVisibility[portfolioColor] === true;
+    }
+    
+    // Default to interactive if no portfolio color or visibility state
+    return true;
+}
+
+// Check if a layer is currently visible
+function isLayerVisible(layerId) {
+    if (!map.getLayer(layerId)) {
+        console.log(`❌ Layer ${layerId} does not exist`);
+        return false;
+    }
+    const visibility = map.getLayoutProperty(layerId, 'visibility');
+    const isVisible = visibility === 'visible';
+    console.log(`🔍 Layer ${layerId}: visibility = "${visibility}", isVisible = ${isVisible}`);
+    return isVisible;
+}
+
+// Update connection line visibility based on both connected point types
+function updateConnectionLineVisibility() {
+    console.log('🚀 === Starting updateConnectionLineVisibility ===');
+    
+    // Define which connection lines connect which point types
+    const connectionMappings = {
+        'connection-lines': ['points-allocator-lps', 'points-collective-locations'],
+        'connection-lines-hover': ['points-allocator-lps', 'points-collective-locations'],
+        'portfolio-connection-lines': ['points-portfolio-companies', 'points-general-partner-location'],
+        'portfolio-connection-lines-hover': ['points-portfolio-companies', 'points-general-partner-location'],
+        'collective-gp-connection-lines': ['points-collective-locations', 'points-general-partner-location'],
+        'collective-gp-connection-lines-hover': ['points-collective-locations', 'points-general-partner-location'],
+        'direct-investment-connection-lines': ['points-direct-investments', 'points-collective-locations']
+    };
+    
+    // Check each connection line type
+    Object.entries(connectionMappings).forEach(([connectionLayerId, requiredPointLayers]) => {
+        console.log(`\n🔗 Checking connection layer: ${connectionLayerId}`);
+        console.log(`   Required point layers: ${requiredPointLayers.join(', ')}`);
+        
+        if (map.getLayer(connectionLayerId)) {
+            console.log(`   ✅ Connection layer exists`);
+            
+            // Check if ALL required point layers are visible
+            const allRequiredLayersVisible = requiredPointLayers.every(pointLayerId => isLayerVisible(pointLayerId));
+            
+            const visibility = allRequiredLayersVisible ? 'visible' : 'none';
+            console.log(`   📊 All required layers visible: ${allRequiredLayersVisible}`);
+            console.log(`   🎯 Setting connection layer visibility to: "${visibility}"`);
+            
+            map.setLayoutProperty(connectionLayerId, 'visibility', visibility);
+        } else {
+            console.log(`   ❌ Connection layer does not exist`);
+        }
+    });
+    
+    console.log('🏁 === Finished updateConnectionLineVisibility ===\n');
+}
+
+function togglePortfolioVisibility(portfolioId, isVisible) {
+    // Ensure portfolio visibility is initialized
+    initializePortfolioVisibility();
+    
+    // Get the portfolio color for this portfolio
+    const portfolioColors = ['#23F2F6', '#F85555', '#F4A300'];
+    const portfolioIndex = parseInt(portfolioId.replace('portfolio', '')) - 1;
+    const portfolioColor = portfolioColors[portfolioIndex];
+    
+    // Get the actual portfolio name
+    const portfolioName = window.portfolioNames && window.portfolioNames[portfolioIndex] ? window.portfolioNames[portfolioIndex] : null;
+    
+    // Store portfolio visibility state by both color and name
+    window.portfolioVisibility[portfolioColor] = isVisible;
+    if (portfolioName) {
+        window.portfolioVisibility[portfolioName] = isVisible;
+    }
+    
+    console.log(`Toggling portfolio ${portfolioName || portfolioId} (${portfolioColor}) to ${isVisible}`);
+    console.log('Current portfolio visibility state:', window.portfolioVisibility);
+    
+    // Update the map layers to reflect the new visibility
+    updatePortfolioLayerVisibility();
+}
+
+// Update map layer visibility based on portfolio toggle states
+function updatePortfolioLayerVisibility() {
+    if (!window.portfolioVisibility) return;
+    
+    // Close any existing popups when visibility changes
+    if (currentPopup) {
+        currentPopup.remove();
+        currentPopup = null;
+    }
+    if (currentClickPopup) {
+        currentClickPopup.remove();
+        currentClickPopup = null;
+    }
+    
+    // Update GP points layer
+    if (map.getLayer('points-general-partner-location')) {
+        const gpOpacityExpression = [
+            'case',
+            ['==', ['get', 'portfolioColor'], '#23F2F6'], window.portfolioVisibility['#23F2F6'] ? 0.7 : 0,
+            ['==', ['get', 'portfolioColor'], '#F85555'], window.portfolioVisibility['#F85555'] ? 0.7 : 0,
+            ['==', ['get', 'portfolioColor'], '#F4A300'], window.portfolioVisibility['#F4A300'] ? 0.7 : 0,
+            0.7 // Default opacity for non-portfolio points
+        ];
+        
+        const gpStrokeOpacityExpression = [
+            'case',
+            ['==', ['get', 'portfolioColor'], '#23F2F6'], window.portfolioVisibility['#23F2F6'] ? 1 : 0,
+            ['==', ['get', 'portfolioColor'], '#F85555'], window.portfolioVisibility['#F85555'] ? 1 : 0,
+            ['==', ['get', 'portfolioColor'], '#F4A300'], window.portfolioVisibility['#F4A300'] ? 1 : 0,
+            1 // Default stroke opacity for non-portfolio points
+        ];
+        
+        map.setPaintProperty('points-general-partner-location', 'circle-opacity', gpOpacityExpression);
+        map.setPaintProperty('points-general-partner-location', 'circle-stroke-opacity', gpStrokeOpacityExpression);
+    }
+    
+    // Update portfolio companies layer
+    if (map.getLayer('points-portfolio-companies')) {
+        const portfolioOpacityExpression = [
+            'case',
+            ['==', ['get', 'portfolioColor'], '#23F2F6'], window.portfolioVisibility['#23F2F6'] ? 0.5 : 0,
+            ['==', ['get', 'portfolioColor'], '#F85555'], window.portfolioVisibility['#F85555'] ? 0.5 : 0,
+            ['==', ['get', 'portfolioColor'], '#F4A300'], window.portfolioVisibility['#F4A300'] ? 0.5 : 0,
+            0.5 // Default opacity for non-portfolio points
+        ];
+        
+        map.setPaintProperty('points-portfolio-companies', 'circle-opacity', portfolioOpacityExpression);
+    }
+    
+    // Update connection lines layer
+    if (map.getLayer('portfolio-connection-lines')) {
+        const connectionOpacityExpression = [
+            'case',
+            ['==', ['get', 'connectionColor'], '#23F2F6'], window.portfolioVisibility['#23F2F6'] ? 0.4 : 0,
+            ['==', ['get', 'connectionColor'], '#F85555'], window.portfolioVisibility['#F85555'] ? 0.4 : 0,
+            ['==', ['get', 'connectionColor'], '#F4A300'], window.portfolioVisibility['#F4A300'] ? 0.4 : 0,
+            0.4 // Default opacity for non-portfolio connections
+        ];
+        
+        map.setPaintProperty('portfolio-connection-lines', 'line-opacity', connectionOpacityExpression);
+    }
+    
+    // Also update connection line visibility for other connection types
+    updateConnectionLineVisibility();
 }
 
 
