@@ -35,7 +35,7 @@ const THEME_COLORS = {
         popupTitle: '#5B8E83',
         
         // UI element colors
-        buttonBg: 'rgba(255,255,255,0.2)',
+        buttonBg: 'rgba(255,255,255,0.05)',
         buttonBorder: 'rgba(255,255,255,0.3)',
         toggleBg: '#2f4a45',
         toggleBgChecked: '#213632',
@@ -70,7 +70,7 @@ const THEME_COLORS = {
         popupTitle: '#4B6360',
         
         // UI element colors
-        buttonBg: 'rgba(255,255,255,0.2)',
+        buttonBg: 'rgba(255,255,255,0.05)',
         buttonBorder: 'rgba(255,255,255,0.3)',
         toggleBg: 'rgba(255,255,255,0.3)',
         toggleBgChecked: 'rgba(255,255,255,0.5)',
@@ -238,8 +238,6 @@ function generatePortfolioColors(gpPoints) {
     // Store portfolio names for dropdown
     window.portfolioNames = uniquePortfolioNames.slice(0, 3); // Only first 3 for now
     
-    console.log('Generated portfolio colors:', portfolioColorMap);
-    console.log('Portfolio names:', window.portfolioNames);
 }
 
 function togglePortfolioColor() {
@@ -431,7 +429,6 @@ function refreshMapColoring() {
 
 // Dropdown functionality
 function toggleDropdown() {
-    console.log('toggleDropdown called'); // Debug log
     const dropdown = document.getElementById('categoryDropdownMenu');
     const button = document.getElementById('categoryDropdown');
     
@@ -446,15 +443,80 @@ function toggleDropdown() {
 
 // Make sure function is globally accessible
 window.toggleDropdown = toggleDropdown;
+window.toggleZoomToDropdown = toggleZoomToDropdown;
+window.zoomToRegion = zoomToRegion;
+window.logMapCenter = logMapCenter;
 
-// Close dropdown when clicking outside
-document.addEventListener('click', (event) => {
-    const dropdown = document.getElementById('categoryDropdownMenu');
-    const button = document.getElementById('categoryDropdown');
+function toggleZoomToDropdown() {
+    const dropdown = document.getElementById('zoomToDropdownMenu');
+    const button = document.getElementById('zoomToDropdown');
     
-    if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+    // Close category dropdown if it's open
+    const categoryDropdown = document.getElementById('categoryDropdownMenu');
+    const categoryButton = document.getElementById('categoryDropdown');
+    if (categoryDropdown.classList.contains('show')) {
+        categoryDropdown.classList.remove('show');
+        categoryButton.classList.remove('open');
+    }
+    
+    if (dropdown.classList.contains('show')) {
         dropdown.classList.remove('show');
         button.classList.remove('open');
+    } else {
+        dropdown.classList.add('show');
+        button.classList.add('open');
+    }
+}
+
+function zoomToRegion(regionName, lat, lon, zoom) {
+    if (map) {
+        map.flyTo({
+            center: [lon, lat],
+            zoom: zoom,
+            essential: true
+        });
+        
+        // Close the dropdown after selection
+        const dropdown = document.getElementById('zoomToDropdownMenu');
+        const button = document.getElementById('zoomToDropdown');
+        dropdown.classList.remove('show');
+        button.classList.remove('open');
+        
+        console.log(`Zoomed to ${regionName}: ${lat}, ${lon}, zoom ${zoom}`);
+    } else {
+        console.log('Map not initialized yet');
+    }
+}
+
+function logMapCenter() {
+    if (map) {
+        const center = map.getCenter();
+        const zoom = map.getZoom();
+        console.log(`Map Center: ${center.lat.toFixed(6)}, ${center.lng.toFixed(6)}`);
+        console.log(`Zoom Level: ${zoom.toFixed(2)}`);
+    } else {
+        console.log('Map not initialized yet');
+    }
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', (event) => {
+    // Category dropdown
+    const categoryDropdown = document.getElementById('categoryDropdownMenu');
+    const categoryButton = document.getElementById('categoryDropdown');
+    
+    if (!categoryButton.contains(event.target) && !categoryDropdown.contains(event.target)) {
+        categoryDropdown.classList.remove('show');
+        categoryButton.classList.remove('open');
+    }
+    
+    // Zoom To dropdown
+    const zoomDropdown = document.getElementById('zoomToDropdownMenu');
+    const zoomButton = document.getElementById('zoomToDropdown');
+    
+    if (!zoomButton.contains(event.target) && !zoomDropdown.contains(event.target)) {
+        zoomDropdown.classList.remove('show');
+        zoomButton.classList.remove('open');
     }
 });
 
@@ -481,7 +543,6 @@ async function reloadColoringLayers() {
         // Set proper draw order
         setLayerDrawOrder();
         
-        console.log('Reloaded coloring layers only');
     } catch (error) {
         console.error('Error reloading coloring layers:', error);
     }
@@ -574,7 +635,6 @@ function setLayerDrawOrder() {
         }
     });
     
-    console.log('Set draw order for map layers');
 }
 
 // DOM elements
@@ -1190,7 +1250,6 @@ function createConnectionLines(allocatorPoints, collectivePoints) {
         }
     });
     
-    console.log(`Created ${connections.length} connection lines between ${allocatorPoints.length} allocators and ${collectivePoints.length} collective locations`);
 }
 
 // Create connection lines between Portfolio Companies and their nearest parent company location
@@ -1302,7 +1361,6 @@ function createPortfolioConnections(portfolioPoints, gpPoints) {
         }
     });
     
-    console.log(`Created ${connections.length} portfolio connection lines`);
 }
 
 // Create connection lines between Collective Locations and General Partner Locations
@@ -1515,7 +1573,6 @@ function createCollectiveGPConnections(collectivePoints, gpPoints) {
         }
     });
     
-    console.log(`Created ${connections.length} collective-GP connection lines`);
 }
 
 // Create connection lines between Direct Investments and their closest two Collective Locations
@@ -1616,7 +1673,6 @@ function createDirectInvestmentConnections(directInvestmentPoints, collectivePoi
         }
     });
     
-    console.log(`Created ${connections.length} direct investment connection lines`);
 }
 
 // Calculate distance between two points using Haversine formula
@@ -1641,6 +1697,18 @@ function getTagColor(tabName) {
         'Allocator LPs': '#ED5FAB'
     };
     return colorMap[tabName] || '#43645D';
+}
+
+// Convert internal tab names to display names (singular form)
+function getDisplayName(tabName) {
+    const displayNameMap = {
+        'Portfolio Companies': 'Underlying Portfolio Company',
+        'Direct Investments': "Collective's Direct Investment",
+        'General Partner Location': 'Partner Venture Manager',
+        'Collective Locations': 'Collective Global',
+        'Allocator LPs': 'Allocator Partner'
+    };
+    return displayNameMap[tabName] || tabName;
 }
 
 // Create simple hover popup content (company name, tag, location only)
@@ -1669,7 +1737,7 @@ function createHoverPopupContent(properties) {
     
     // Add tag showing point type
     const tagColor = getTagColor(properties.tabName);
-    const tagLabel = properties.tabName;
+    const tagLabel = getDisplayName(properties.tabName);
     content += `<div class="popup-tag">
         <div class="popup-tag-dot" style="background-color: ${tagColor}; opacity: 0.5;"></div>
         <span class="popup-tag-label">${tagLabel}</span>
@@ -1736,7 +1804,7 @@ function createClickPopupContent(properties) {
     
     // Add tag showing point type
     const tagColor = getTagColor(properties.tabName);
-    const tagLabel = properties.tabName;
+    const tagLabel = getDisplayName(properties.tabName);
     content += `<div class="popup-tag">
         <div class="popup-tag-dot" style="background-color: ${tagColor}; opacity: 0.5;"></div>
         <span class="popup-tag-label">${tagLabel}</span>
@@ -1860,7 +1928,6 @@ function setupLegendToggles() {
                 }
                 
                 // Update connection line visibility based on both connected point types
-                console.log(`🔄 Calling updateConnectionLineVisibility from toggle for layer: ${targetLayerId}`);
                 updateConnectionLineVisibility();
                 
             } catch (error) {
@@ -1873,7 +1940,6 @@ function setupLegendToggles() {
     setupPortfolioToggles();
     
     // Initialize connection line visibility after all data is loaded
-    console.log('🎯 Calling updateConnectionLineVisibility from setupLegendToggles');
     updateConnectionLineVisibility();
 }
 
@@ -1886,7 +1952,6 @@ function setupPortfolioToggles() {
             const portfolioId = e.target.getAttribute('data-portfolio');
             const isVisible = e.target.checked;
             
-            console.log(`Toggling portfolio ${portfolioId} visibility to ${isVisible}`);
             
             // Toggle portfolio visibility based on portfolio ID
             togglePortfolioVisibility(portfolioId, isVisible);
@@ -1909,7 +1974,6 @@ function initializePortfolioVisibility() {
         }
     });
     
-    console.log('Initialized portfolio visibility:', window.portfolioVisibility);
 }
 
 // Check if a point should be interactive (visible and hoverable)
@@ -1932,18 +1996,15 @@ function isPointInteractive(properties) {
 // Check if a layer is currently visible
 function isLayerVisible(layerId) {
     if (!map.getLayer(layerId)) {
-        console.log(`❌ Layer ${layerId} does not exist`);
         return false;
     }
     const visibility = map.getLayoutProperty(layerId, 'visibility');
     const isVisible = visibility === 'visible';
-    console.log(`🔍 Layer ${layerId}: visibility = "${visibility}", isVisible = ${isVisible}`);
     return isVisible;
 }
 
 // Update connection line visibility based on both connected point types
 function updateConnectionLineVisibility() {
-    console.log('🚀 === Starting updateConnectionLineVisibility ===');
     
     // Define which connection lines connect which point types
     const connectionMappings = {
@@ -1958,26 +2019,19 @@ function updateConnectionLineVisibility() {
     
     // Check each connection line type
     Object.entries(connectionMappings).forEach(([connectionLayerId, requiredPointLayers]) => {
-        console.log(`\n🔗 Checking connection layer: ${connectionLayerId}`);
-        console.log(`   Required point layers: ${requiredPointLayers.join(', ')}`);
         
         if (map.getLayer(connectionLayerId)) {
-            console.log(`   ✅ Connection layer exists`);
             
             // Check if ALL required point layers are visible
             const allRequiredLayersVisible = requiredPointLayers.every(pointLayerId => isLayerVisible(pointLayerId));
             
             const visibility = allRequiredLayersVisible ? 'visible' : 'none';
-            console.log(`   📊 All required layers visible: ${allRequiredLayersVisible}`);
-            console.log(`   🎯 Setting connection layer visibility to: "${visibility}"`);
             
             map.setLayoutProperty(connectionLayerId, 'visibility', visibility);
         } else {
-            console.log(`   ❌ Connection layer does not exist`);
         }
     });
     
-    console.log('🏁 === Finished updateConnectionLineVisibility ===\n');
 }
 
 function togglePortfolioVisibility(portfolioId, isVisible) {
@@ -1998,8 +2052,6 @@ function togglePortfolioVisibility(portfolioId, isVisible) {
         window.portfolioVisibility[portfolioName] = isVisible;
     }
     
-    console.log(`Toggling portfolio ${portfolioName || portfolioId} (${portfolioColor}) to ${isVisible}`);
-    console.log('Current portfolio visibility state:', window.portfolioVisibility);
     
     // Update the map layers to reflect the new visibility
     updatePortfolioLayerVisibility();

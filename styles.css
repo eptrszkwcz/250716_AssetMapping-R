@@ -41,9 +41,10 @@ body {
 }
 
 .btn {
-    background: rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.05);
     border: 1px solid rgba(255,255,255,0.3);
-    color: white;
+    /* color: white; */
+    color: #5b8e83;
     padding: 0.5rem 1rem;
     border-radius: 6px;
     cursor: pointer;
@@ -151,6 +152,10 @@ body.light-theme .dropdown-item {
 
 body.light-theme .dropdown-item:hover {
     background: rgba(75, 99, 96, 0.1);
+}
+
+body.light-theme .zoom-item:hover {
+    background-color: rgba(75, 99, 96, 0.1);
 }
 
 /* Light theme legend styles */
@@ -277,6 +282,7 @@ body.light-theme .legend-item {
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     z-index: 1000;
     min-width: 150px;
+    border: 1px solid rgba(255,255,255,0.3);
 }
 
 .legend h4 {
@@ -384,6 +390,35 @@ body.light-theme .legend-item {
 
 .dropdown-item:has(input:checked) {
     opacity: 1;
+}
+
+/* Zoom item styling (no toggles, just clickable) */
+.zoom-item {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.zoom-item:hover {
+    background-color: rgba(91, 142, 131, 0.2);
+}
+
+.zoom-item span {
+    font-weight: 500;
+}
+
+/* Mapbox control button styling */
+.mapboxgl-ctrl-top-right .mapboxgl-ctrl button {
+    color: hotpink !important;
+    opacity: 0.2 !important;
+    border: 1px solid rgba(255,255,255,0.3) !important;
+}
+
+.mapboxgl-ctrl-top-right .mapboxgl-ctrl button span {
+    color: hotpink !important;
+}
+
+.mapboxgl-ctrl-top-left .mapboxgl-ctrl {
+    opacity: 0.4 !important;
 }
 
 /* Mapbox popup customization */
