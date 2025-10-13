@@ -4,7 +4,7 @@ const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoicHRyc3prd2N6IiwiYSI6ImNpdHVuOXpqMzAwMmEy
 const GOOGLE_SHEET_ID = '1waBUthisVzvuqBnXjoggBanNwvOL_-xn3JsdgA5QqC0';
 
 // Theme configuration
-let isLightTheme = false; // Boolean to control light/dark theme
+let isLightTheme = true; // Boolean to control light/dark theme
 
 // Portfolio color configuration
 let isPortfolioColorMode = false; // Boolean to control portfolio vs category coloring
