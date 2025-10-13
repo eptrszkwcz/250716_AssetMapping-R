@@ -12,6 +12,115 @@
     <div class="container">
         <header class="header">
             <h1>Collective Global Asset Mapping</h1>
+            <div class="controls">
+                <!-- <button id="themeToggle" class="btn" onclick="toggleTheme()">☀️ Light</button> -->
+                <button id="portfolioColorToggle" class="btn" onclick="togglePortfolioColor()">Color by Portfolio</button>
+                <!-- <button id="latLonButton" class="btn" onclick="logMapCenter()">lat/lon</button> -->
+                <div class="dropdown">
+                    <button id="zoomToDropdown" class="btn dropdown-btn" onclick="toggleZoomToDropdown()">Zoom To</button>
+                    <div id="zoomToDropdownMenu" class="dropdown-menu">
+                        <div class="dropdown-item zoom-item" onclick="zoomToRegion('World', 9, 0, 1.8)">
+                            <span>World</span>
+                        </div>
+                        <div class="dropdown-item zoom-item" onclick="zoomToRegion('USA-Canada', 25.633969, -113.706161, 3.36)">
+                            <span>USA-Canada</span>
+                        </div>
+                        <div class="dropdown-item zoom-item" onclick="zoomToRegion('Latin America', -8.49647, -72.601929, 2.75)">
+                            <span>Latin America</span>
+                        </div>
+                        <div class="dropdown-item zoom-item" onclick="zoomToRegion('Europe', 49.893044, 3.771825, 4.21)">
+                            <span>Europe</span>
+                        </div>
+                        <div class="dropdown-item zoom-item" onclick="zoomToRegion('Mid East', 27.394659, 43.426496, 4.14)">
+                            <span>Mid East</span>
+                        </div>
+                        <div class="dropdown-item zoom-item" onclick="zoomToRegion('Asia-Pacific', 3.488557, 110.785359, 2.45)">
+                            <span>Asia-Pacific</span>
+                        </div>
+                        <div class="dropdown-item zoom-item" onclick="zoomToRegion('Africa', 1.187559, 14.987309, 2.91)">
+                            <span>Africa</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <button id="categoryDropdown" class="btn dropdown-btn" onclick="toggleDropdown()">Category</button>
+                    <div id="categoryDropdownMenu" class="dropdown-menu">
+                        <!-- Common toggles (always visible) -->
+                        <div class="dropdown-item">
+                            <span class="legend-color" style="background-color: #03B570;"></span>
+                            <span>Collective Global</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked data-layer="points-collective-locations">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="dropdown-item">
+                            <span class="legend-color" style="background-color: #ED5FAB;"></span>
+                            <span>Allocator Partner</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked data-layer="points-allocator-lps">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="dropdown-item">
+                            <span class="legend-color" style="background-color: #9B59B6;"></span>
+                            <span>Collective's Direct Investment</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked data-layer="points-direct-investments">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        
+                        <!-- Category Mode Content (GP and Portfolio Company toggles) -->
+                        <div id="categoryModeContent">
+                            <div class="dropdown-item">
+                                <span class="legend-color" style="background-color: #FFD600;"></span>
+                                <span>Partner Venture Manager</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked data-layer="points-general-partner-location">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="dropdown-item">
+                                <span class="legend-color" style="background-color: #006FFF;"></span>
+                                <span>Underlying Portfolio Company</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked data-layer="points-portfolio-companies">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Portfolio Mode Content (Individual portfolio toggles) -->
+                        <div id="portfolioModeContent" style="display: none;">
+                            <div class="dropdown-item">
+                                <span class="legend-color" style="background-color: #23F2F6;"></span>
+                                <span>Portfolio 1</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked data-portfolio="portfolio1">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="dropdown-item">
+                                <span class="legend-color" style="background-color: #F85555;"></span>
+                                <span>Portfolio 2</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked data-portfolio="portfolio2">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="dropdown-item">
+                                <span class="legend-color" style="background-color: #F4A300;"></span>
+                                <span>Portfolio 3</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked data-portfolio="portfolio3">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </header>
         
         <main class="main">
@@ -29,48 +138,48 @@
         </main>
         
         <div class="legend">
-            <!-- <h4>Legend</h4> -->
+            <h4>Legend</h4>
+            <!-- Common legend items (always visible) -->
             <div class="legend-item">
                 <span class="legend-color" style="background-color: #03B570;"></span>
                 <span>Collective Global</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" checked data-layer="points-collective-locations">
-                    <span class="toggle-slider"></span>
-                </label>
             </div>
             <div class="legend-item">
                 <span class="legend-color" style="background-color: #ED5FAB;"></span>
-                <span>Allocator Partners</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" checked data-layer="points-allocator-lps">
-                    <span class="toggle-slider"></span>
-                </label>
+                <span>Allocator Partner</span>
             </div>
-            
             <div class="legend-item">
                 <span class="legend-color" style="background-color: #9B59B6;"></span>
-                <span>Collective's Direct Investments</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" checked data-layer="points-direct-investments">
-                    <span class="toggle-slider"></span>
-                </label>
+                <span>Collective's Direct Investment</span>
             </div>
-            <div class="legend-item">
-                <span class="legend-color" style="background-color: #FFD600;"></span>
-                <span>Partner Venture Managers</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" checked data-layer="points-general-partner-location">
-                    <span class="toggle-slider"></span>
-                </label>
+            
+            <!-- Category Mode Content (GP and Portfolio Company legend items) -->
+            <div id="legendCategoryModeContent">
+                <div class="legend-item">
+                    <span class="legend-color" style="background-color: #FFD600;"></span>
+                    <span>Partner Venture Manager</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background-color: #006FFF;"></span>
+                    <span>Underlying Portfolio Company</span>
+                </div>
             </div>
-            <div class="legend-item">
-                <span class="legend-color" style="background-color: #006FFF;"></span>
-                <span>Underlying Portfolio Companies</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" checked data-layer="points-portfolio-companies">
-                    <span class="toggle-slider"></span>
-                </label>
-            </div>  
+            
+            <!-- Portfolio Mode Content (Individual portfolio legend items) -->
+            <div id="legendPortfolioModeContent" style="display: none;">
+                <div class="legend-item">
+                    <span class="legend-color" style="background-color: #23F2F6;"></span>
+                    <span>Portfolio 1</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background-color: #F85555;"></span>
+                    <span>Portfolio 2</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background-color: #F4A300;"></span>
+                    <span>Portfolio 3</span>
+                </div>
+            </div>
         </div>
     </div>
 
