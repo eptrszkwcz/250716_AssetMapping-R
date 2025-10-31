@@ -13,7 +13,6 @@
         <header class="header">
             <h1>Collective Global Asset Mapping</h1>
             <div class="controls">
-                <!-- <button id="themeToggle" class="btn" onclick="toggleTheme()">☀️ Light</button> -->
                 <button id="portfolioColorToggle" class="btn" onclick="togglePortfolioColor()">Color by Portfolio</button>
                 <!-- <button id="latLonButton" class="btn" onclick="logMapCenter()">lat/lon</button> -->
                 <div class="dropdown">
@@ -124,6 +123,12 @@
         </header>
         
         <main class="main">
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Loading map data...</p>
+            </div>
+            
             <div id="map" class="map-container"></div>
             
             <div class="sidebar" id="sidebar">
@@ -183,6 +188,19 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Load JavaScript modules in dependency order -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/portfolio.js"></script>
+    <script src="js/popups.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/dataLoader.js"></script>
+    <script src="js/mapRenderer.js"></script>
+    <script src="js/connections.js"></script>
+    <script src="js/legend.js"></script>
+    <script src="js/eventHandlers.js"></script>
+    <script src="js/mapManager.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>
