@@ -225,6 +225,10 @@ function createCollectiveGPConnections(collectivePoints, gpPoints) {
             const collectiveLat = parseFloat(nearestCollective.latitude || nearestCollective.lat || nearestCollective.Lat || nearestCollective.Latitude || nearestCollective.LAT);
             const collectiveLng = parseFloat(nearestCollective.longitude || nearestCollective.lng || nearestCollective.lon || nearestCollective.Lon || nearestCollective.long || nearestCollective.Longitude || nearestCollective.LNG);
             
+            // Get portfolio color for this GP (if it exists)
+            const gpName = gp['Company Name'] || gp['company name'] || gp['Company'] || 'Unknown GP';
+            const portfolioColor = gp.portfolioColor || portfolioColorMap[gpName] || null;
+            
             connections.push({
                 type: 'Feature',
                 id: `collective-gp-connection-${gpIndex}`,
@@ -240,7 +244,8 @@ function createCollectiveGPConnections(collectivePoints, gpPoints) {
                     gpName: gp['General Partner Name'] || 'Unknown GP',
                     collectiveName: nearestCollective['Collective Name'] || 'Unknown Collective',
                     distance: Math.round(shortestDistance),
-                    connectionType: 'collective-gp'
+                    connectionType: 'collective-gp',
+                    portfolioColor: portfolioColor // Add portfolio color to identify which portfolio this belongs to
                 }
             });
         }
@@ -268,7 +273,8 @@ function createCollectiveGPConnections(collectivePoints, gpPoints) {
             'visibility': 'none' // Start hidden, will be shown by updateConnectionLineVisibility()
         },
         paint: {
-            'line-color': '#FFD600', // Yellow
+            // Start with yellow, will be updated by updateCollectiveGPConnectionColors()
+            'line-color': '#FFD600',
             'line-width': 1.5,
             'line-opacity': 0.3
         }
@@ -285,7 +291,8 @@ function createCollectiveGPConnections(collectivePoints, gpPoints) {
             'visibility': 'none' // Start hidden, will be shown by updateConnectionLineVisibility()
         },
         paint: {
-            'line-color': '#FFD600', // Yellow
+            // Start with yellow, will be updated by updateCollectiveGPConnectionColors()
+            'line-color': '#FFD600',
             'line-width': 1.5,
             'line-opacity': [
                 'case',

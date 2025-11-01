@@ -1,0 +1,13 @@
+/* Map Renderer - Circle Styles and Point Display
+   =============================================== */
+
+/* Custom circle styles */
+.custom-circle {
+    transition: all 0.2s ease;
+}
+
+.custom-circle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4) !important;
+}
+

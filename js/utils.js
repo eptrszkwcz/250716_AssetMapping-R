@@ -14,7 +14,14 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 }
 
 // Get tag color based on tab name
-function getTagColor(tabName) {
+function getTagColor(tabName, properties = null) {
+    // In Portfolio mode, for GP and Portfolio Company points, use portfolio color if available
+    if (isPortfolioColorMode && properties && properties.portfolioColor && 
+        (tabName === 'General Partner Location' || tabName === 'Portfolio Companies')) {
+        return properties.portfolioColor;
+    }
+    
+    // Otherwise use category color
     const colorMap = {
         'Portfolio Companies': '#006FFF',
         'Direct Investments': '#9B59B6',

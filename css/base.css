@@ -1,0 +1,36 @@
+/* Base Styles - Global Resets and Body Styles
+   ============================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: #0f1529;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.main {
+    flex: 1;
+    display: flex;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(180deg, #9FB8B3 0%, #B0BFBD 100%);
+}
+
+.status {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+

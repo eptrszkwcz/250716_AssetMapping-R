@@ -50,22 +50,25 @@ async function init() {
         map.on('load', async () => {
             await loadAllDataFromGoogleSheets();
             
-            // Hide spinner and show map with fade-in effect
-            const spinner = document.getElementById('loadingSpinner');
-            const mapContainer = document.getElementById('map');
-            
-            if (spinner && mapContainer) {
-                // Add hidden class to spinner (fade out)
-                spinner.classList.add('hidden');
+            // Wait for map to be fully idle (tiles rendered) before fading in
+            map.once('idle', () => {
+                // Hide spinner and show map with fade-in effect
+                const spinner = document.getElementById('loadingSpinner');
+                const mapContainer = document.getElementById('map');
                 
-                // Show map with fade-in effect
-                mapContainer.classList.add('visible');
-                
-                // Remove spinner from DOM after fade-out completes
-                setTimeout(() => {
-                    spinner.style.display = 'none';
-                }, 500); // Match the CSS transition duration
-            }
+                if (spinner && mapContainer) {
+                    // Add hidden class to spinner (fade out)
+                    spinner.classList.add('hidden');
+                    
+                    // Show map with fade-in effect
+                    mapContainer.classList.add('visible');
+                    
+                    // Remove spinner from DOM after fade-out completes
+                    setTimeout(() => {
+                        spinner.style.display = 'none';
+                    }, 500); // Match the CSS transition duration
+                }
+            });
         });
 
         // Setup event listeners

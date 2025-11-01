@@ -1,0 +1,80 @@
+/* Map Manager - Map Container and Mapbox Controls
+   ================================================ */
+
+.map-container {
+    flex: 1;
+    position: relative;
+    opacity: 0;
+    transition: opacity 0.8s ease-in;
+    background: linear-gradient(135deg, #132724 0%, #0A1B19 100%);
+}
+
+.map-container.visible {
+    opacity: 1;
+}
+
+/* Mapbox canvas background */
+.map-container canvas {
+    background-color: var(--map-bg, #0022ff) !important;
+}
+
+/* Mapbox control button styling */
+.mapboxgl-ctrl-top-right .mapboxgl-ctrl button {
+    color: hotpink !important;
+    opacity: 0.2 !important;
+    border: 1px solid rgba(255,255,255,0.3) !important;
+}
+
+.mapboxgl-ctrl-top-right .mapboxgl-ctrl button span {
+    color: hotpink !important;
+}
+
+.mapboxgl-ctrl-top-left .mapboxgl-ctrl {
+    opacity: 0.4 !important;
+}
+
+/* Mapbox controls opacity */
+.mapboxgl-ctrl-logo {
+    opacity: 0.1 !important;
+}
+
+.mapboxgl-ctrl-group button,
+.mapboxgl-ctrl-group .mapboxgl-ctrl-icon {
+    opacity: 1 !important;
+}
+
+.mapboxgl-ctrl-group:hover button,
+.mapboxgl-ctrl-group:hover .mapboxgl-ctrl-icon {
+    opacity: 1 !important;
+}
+
+/* Mapbox controls styling */
+.mapboxgl-ctrl-group {
+    background-color: var(--map-control-bg, #4B6360) !important;
+    border-color: var(--map-control-bg, #4B6360) !important;
+}
+
+.mapboxgl-ctrl-group button {
+    background-color: var(--map-control-bg, #4B6360) !important;
+    color: var(--map-control-color, #43645D) !important;
+    border-color: var(--map-control-bg, #4B6360) !important;
+}
+
+.mapboxgl-ctrl-group button:hover {
+    background-color: var(--map-control-hover-bg, #43645D) !important;
+    color: var(--map-control-hover-color, #4B6360) !important;
+}
+
+.mapboxgl-ctrl-group .mapboxgl-ctrl-icon {
+    color: var(--map-control-color, #43645D) !important;
+}
+
+.mapboxgl-ctrl-group button:hover .mapboxgl-ctrl-icon {
+    color: var(--map-control-hover-color, #4B6360) !important;
+}
+
+/* Hide Mapbox attribution */
+.mapboxgl-ctrl-attrib {
+    display: none !important;
+}
+

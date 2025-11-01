@@ -1,0 +1,37 @@
+/* Theme Styles - Light Theme Overrides
+   ===================================== */
+
+/* Light theme dropdown styles */
+body.light-theme .dropdown-menu {
+    background: #f8f9fa;
+    border: 1px solid rgba(75, 99, 96, 0.3);
+    color: #4B6360;
+}
+
+body.light-theme .dropdown-item {
+    color: #4B6360;
+    border-bottom: 1px solid rgba(75, 99, 96, 0.1);
+}
+
+body.light-theme .dropdown-item:hover {
+    background: rgba(75, 99, 96, 0.1);
+}
+
+body.light-theme .zoom-item:hover {
+    background-color: rgba(75, 99, 96, 0.1);
+}
+
+/* Light theme legend styles */
+body.light-theme .legend {
+    background: #f8f9fa;
+    border: 1px solid rgba(75, 99, 96, 0.3);
+}
+
+body.light-theme .legend h4 {
+    color: #4B6360;
+}
+
+body.light-theme .legend-item {
+    color: #4B6360;
+}
+

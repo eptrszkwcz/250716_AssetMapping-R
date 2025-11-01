@@ -1,0 +1,56 @@
+/* Data Loader - Loading Spinner and Animations
+   ============================================= */
+
+/* Loading Spinner Styles */
+.loading-spinner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, #9FB8B3 0%, #B0BFBD 100%);
+    z-index: 2000;
+    transition: opacity 0.5s ease-out;
+}
+
+.loading-spinner.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(91, 142, 131, 0.2);
+    border-top: 4px solid #5B8E83;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1.5rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-spinner p {
+    color: #5B8E83;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+/* Loading animation (legacy) */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+

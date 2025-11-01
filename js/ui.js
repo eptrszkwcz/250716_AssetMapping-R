@@ -1,22 +1,7 @@
 // UI Interactions and Controls
 // =============================
 
-// Dropdown functionality
-function toggleDropdown() {
-    const dropdown = document.getElementById('categoryDropdownMenu');
-    const button = document.getElementById('categoryDropdown');
-    
-    if (dropdown.classList.contains('show')) {
-        dropdown.classList.remove('show');
-        button.classList.remove('open');
-    } else {
-        dropdown.classList.add('show');
-        button.classList.add('open');
-    }
-}
-
 // Make sure function is globally accessible
-window.toggleDropdown = toggleDropdown;
 window.toggleZoomToDropdown = toggleZoomToDropdown;
 window.zoomToRegion = zoomToRegion;
 window.logMapCenter = logMapCenter;
@@ -24,14 +9,6 @@ window.logMapCenter = logMapCenter;
 function toggleZoomToDropdown() {
     const dropdown = document.getElementById('zoomToDropdownMenu');
     const button = document.getElementById('zoomToDropdown');
-    
-    // Close category dropdown if it's open
-    const categoryDropdown = document.getElementById('categoryDropdownMenu');
-    const categoryButton = document.getElementById('categoryDropdown');
-    if (categoryDropdown.classList.contains('show')) {
-        categoryDropdown.classList.remove('show');
-        categoryButton.classList.remove('open');
-    }
     
     if (dropdown.classList.contains('show')) {
         dropdown.classList.remove('show');
@@ -75,15 +52,6 @@ function logMapCenter() {
 
 // Close dropdowns when clicking outside
 document.addEventListener('click', (event) => {
-    // Category dropdown
-    const categoryDropdown = document.getElementById('categoryDropdownMenu');
-    const categoryButton = document.getElementById('categoryDropdown');
-    
-    if (!categoryButton.contains(event.target) && !categoryDropdown.contains(event.target)) {
-        categoryDropdown.classList.remove('show');
-        categoryButton.classList.remove('open');
-    }
-    
     // Zoom To dropdown
     const zoomDropdown = document.getElementById('zoomToDropdownMenu');
     const zoomButton = document.getElementById('zoomToDropdown');

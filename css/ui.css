@@ -1,0 +1,220 @@
+/* UI Components - Header, Controls, Buttons, Dropdowns, Sidebar
+   ============================================================== */
+
+.header {
+    background: #9FB8B3;
+    /* background: linear-gradient(135deg, #132724 0%, #0A1B19 100%); */
+    color: #5B8E83;
+    padding: 0.5rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+.header h1 {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.btn {
+    /* background: rgba(255,255,255,0.05); */
+    /* background: #A0B7B3; */
+    background: #A0B7B3 !important; 
+    border: 1px solid rgba(255,255,255,0.3) !important;
+    color: #43645D !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    font-size: 0.9rem !important;
+    transition: all 0.3s ease !important;
+}
+
+.btn:hover {
+    background: rgba(255,255,255,0.1) !important;
+    /* transform: translateY(-1px) !important; */
+}
+
+/* Dropdown styles */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-btn {
+    position: relative;
+}
+
+.dropdown-btn::after {
+    content: '▼';
+    margin-left: 0.5rem;
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+    display: inline-block;
+}
+
+.dropdown-btn.open::after {
+    transform: rotate(90deg) !important;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    /* background: rgb(159, 183, 179); */
+    background: #A0B7B3 !important;
+    border: 1px solid rgba(91, 142, 131, 0.3);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    width: 260px;
+    min-width: 280px;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+    font-size: 0.9rem !important;
+    font-weight: 300 !important;
+}
+
+.dropdown-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 0.55rem 1rem;
+    color: rgb(75, 99, 96);
+    border-bottom: 1px solid rgba(91, 142, 131, 0.1);
+    /* gap: 0.75rem; */
+}
+
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.dropdown-item:hover {
+    /* background: rgba(91, 142, 131, 0.1); */
+    background: rgba(255,255,255,0.1) !important;
+}
+
+.dropdown-item .legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.dropdown-item span:not(.legend-color) {
+    flex: 1;
+    font-size: 0.9rem;
+}
+
+.dropdown-item .toggle-switch {
+    margin: 0;
+    flex-shrink: 0;
+}
+
+/* Fade dropdown items when toggle is off */
+.dropdown-item:has(input:not(:checked)) {
+    opacity: 0.3;
+}
+
+.dropdown-item:has(input:checked) {
+    opacity: 1;
+}
+
+/* Zoom item styling (no toggles, just clickable) */
+.zoom-item {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.zoom-item:hover {
+    background-color: rgba(91, 142, 131, 0.2);
+}
+
+.zoom-item span {
+    font-weight: 500;
+}
+
+/* Sidebar */
+.sidebar {
+    position: absolute;
+    right: -400px;
+    top: 0;
+    width: 400px;
+    height: 100%;
+    background: white;
+    box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+    transition: right 0.3s ease;
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.sidebar.open {
+    right: 0;
+}
+
+.sidebar-header {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar-header h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+}
+
+.close-btn:hover {
+    background-color: #e9ecef;
+}
+
+.sidebar-content {
+    padding: 1rem;
+}
+
+.sidebar-content h4 {
+    color: #495057;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.sidebar-content p {
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+

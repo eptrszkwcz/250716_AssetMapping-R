@@ -26,7 +26,7 @@ function createHoverPopupContent(properties) {
     }
     
     // Add tag showing point type
-    const tagColor = getTagColor(properties.tabName);
+    const tagColor = getTagColor(properties.tabName, properties);
     const tagLabel = getDisplayName(properties.tabName);
     content += `<div class="popup-tag">
         <div class="popup-tag-dot" style="background-color: ${tagColor}; opacity: 0.5;"></div>
@@ -93,7 +93,7 @@ function createClickPopupContent(properties) {
     }
     
     // Add tag showing point type
-    const tagColor = getTagColor(properties.tabName);
+    const tagColor = getTagColor(properties.tabName, properties);
     const tagLabel = getDisplayName(properties.tabName);
     content += `<div class="popup-tag">
         <div class="popup-tag-dot" style="background-color: ${tagColor}; opacity: 0.5;"></div>
