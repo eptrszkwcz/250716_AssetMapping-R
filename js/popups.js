@@ -100,6 +100,22 @@ function createClickPopupContent(properties) {
         <span class="popup-tag-label">${tagLabel}</span>
     </div>`;
     
+    // Add website link if exists
+    let websiteUrl = '';
+    for (const [key, value] of Object.entries(properties)) {
+        const keyLower = key.toLowerCase();
+        if (value && (keyLower === 'website' || keyLower === 'url')) {
+            websiteUrl = value;
+            break;
+        }
+    }
+    
+    if (websiteUrl) {
+        // Ensure URL has protocol
+        const formattedUrl = websiteUrl.startsWith('http') ? websiteUrl : `https://${websiteUrl}`;
+        content += `<div class="company-link"><a href="${formattedUrl}" target="_blank" rel="noopener noreferrer">${websiteUrl}</a></div>`;
+    }
+    
     // Add other properties
     Object.entries(properties).forEach(([key, value]) => {
         const keyLower = key.toLowerCase();

@@ -45,11 +45,11 @@
 
 .hover-popup .popup-title {
     font-size: 1rem !important;
-    margin-bottom: 6px !important;
+    margin-bottom: 10px !important;
 }
 
 .hover-popup .popup-tag {
-    margin-bottom: 6px !important;
+    margin: 0 0 6px -4px !important;
     font-size: 0.75rem !important;
 }
 
@@ -71,11 +71,11 @@
 
 .click-popup .popup-title {
     font-size: 1.1rem !important;
-    margin-bottom: 8px !important;
+    margin-bottom: 16px !important;
 }
 
 .click-popup .popup-tag {
-    margin-bottom: 8px !important;
+    margin: 0 0 8px -4px !important;
     font-size: 0.8rem !important;
 }
 
@@ -153,7 +153,7 @@
 
 /* Popup content styling */
 .popup-title {
-    margin: 0 0 8px 0;
+    margin: 0 0 16px 0 !important;
     font-size: 1.1rem;
     font-weight: bold;
     color: var(--popup-title, #5B8E83);
@@ -179,7 +179,7 @@
     background-color: var(--tag-bg, rgba(255, 255, 255, 0.03));
     border: 0.5px solid var(--tag-border, #43645D);
     border-radius: 8px;
-    margin: 0px 0 8px 0;
+    margin: 0 0 8px -4px !important;
     font-size: 0.8rem;
     color: var(--popup-text, #43645D);
 }
@@ -194,6 +194,21 @@
 .popup-tag-label {
     font-weight: 500;
     color: var(--popup-text, #43645D);
+}
+
+/* Company website link styling */
+.company-link {
+    margin-bottom: 8px;
+}
+
+.company-link a {
+    font-size: 0.9rem;
+    color: var(--popup-title, #5B8E83);
+    text-decoration: underline;
+}
+
+.company-link a:hover {
+    opacity: 0.8;
 }
 
 .mapboxgl-popup-anchor-top .mapboxgl-popup-tip,

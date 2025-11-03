@@ -16,7 +16,7 @@ function generatePortfolioColors(gpPoints) {
     portfolioColorMap = {};
     
     // Specific colors for the first 3 portfolios
-    const specificColors = ['#23F2F6', '#F85555', '#F4A300'];
+    const specificColors = ['#209DB5', '#F85555', '#F4A300'];
     let specificColorIndex = 0;
     
     // Get unique portfolio names
@@ -122,7 +122,7 @@ function ensureColorModeLayersVisible() {
             
             // Initialize portfolio visibility to all visible
             initializePortfolioVisibility();
-            window.portfolioVisibility['#23F2F6'] = true; // General Catalyst
+            window.portfolioVisibility['#209DB5'] = true; // General Catalyst
             window.portfolioVisibility['#F85555'] = true; // Drive Capital
             window.portfolioVisibility['#F4A300'] = true; // Second Sight Ventures
             
@@ -327,7 +327,7 @@ function initializePortfolioVisibility() {
     }
     
     // Initialize all portfolios as visible by default
-    const portfolioColors = ['#23F2F6', '#F85555', '#F4A300'];
+    const portfolioColors = ['#209DB5', '#F85555', '#F4A300'];
     portfolioColors.forEach(color => {
         if (window.portfolioVisibility[color] === undefined) {
             window.portfolioVisibility[color] = true;
@@ -357,7 +357,7 @@ function togglePortfolioVisibility(portfolioId, isVisible) {
     initializePortfolioVisibility();
     
     // Get the portfolio color for this portfolio
-    const portfolioColors = ['#23F2F6', '#F85555', '#F4A300'];
+    const portfolioColors = ['#209DB5', '#F85555', '#F4A300'];
     const portfolioIndex = parseInt(portfolioId.replace('portfolio', '')) - 1;
     const portfolioColor = portfolioColors[portfolioIndex];
     
@@ -392,7 +392,7 @@ function updatePortfolioLayerVisibility() {
     if (map.getLayer('points-general-partner-location')) {
         const gpOpacityExpression = [
             'case',
-            ['==', ['get', 'portfolioColor'], '#23F2F6'], window.portfolioVisibility['#23F2F6'] ? 0.7 : 0,
+            ['==', ['get', 'portfolioColor'], '#209DB5'], window.portfolioVisibility['#209DB5'] ? 0.7 : 0,
             ['==', ['get', 'portfolioColor'], '#F85555'], window.portfolioVisibility['#F85555'] ? 0.7 : 0,
             ['==', ['get', 'portfolioColor'], '#F4A300'], window.portfolioVisibility['#F4A300'] ? 0.7 : 0,
             0 // Hide non-portfolio points in portfolio mode
@@ -400,7 +400,7 @@ function updatePortfolioLayerVisibility() {
         
         const gpStrokeOpacityExpression = [
             'case',
-            ['==', ['get', 'portfolioColor'], '#23F2F6'], window.portfolioVisibility['#23F2F6'] ? 1 : 0,
+            ['==', ['get', 'portfolioColor'], '#209DB5'], window.portfolioVisibility['#209DB5'] ? 1 : 0,
             ['==', ['get', 'portfolioColor'], '#F85555'], window.portfolioVisibility['#F85555'] ? 1 : 0,
             ['==', ['get', 'portfolioColor'], '#F4A300'], window.portfolioVisibility['#F4A300'] ? 1 : 0,
             0 // Hide non-portfolio points in portfolio mode
@@ -414,7 +414,7 @@ function updatePortfolioLayerVisibility() {
     if (map.getLayer('points-portfolio-companies')) {
         const portfolioOpacityExpression = [
             'case',
-            ['==', ['get', 'portfolioColor'], '#23F2F6'], window.portfolioVisibility['#23F2F6'] ? 0.5 : 0,
+            ['==', ['get', 'portfolioColor'], '#209DB5'], window.portfolioVisibility['#209DB5'] ? 0.5 : 0,
             ['==', ['get', 'portfolioColor'], '#F85555'], window.portfolioVisibility['#F85555'] ? 0.5 : 0,
             ['==', ['get', 'portfolioColor'], '#F4A300'], window.portfolioVisibility['#F4A300'] ? 0.5 : 0,
             0 // Hide non-portfolio points in portfolio mode
@@ -427,7 +427,7 @@ function updatePortfolioLayerVisibility() {
     if (map.getLayer('portfolio-connection-lines')) {
         const connectionOpacityExpression = [
             'case',
-            ['==', ['get', 'connectionColor'], '#23F2F6'], window.portfolioVisibility['#23F2F6'] ? 0.4 : 0,
+            ['==', ['get', 'connectionColor'], '#209DB5'], window.portfolioVisibility['#209DB5'] ? 0.4 : 0,
             ['==', ['get', 'connectionColor'], '#F85555'], window.portfolioVisibility['#F85555'] ? 0.4 : 0,
             ['==', ['get', 'connectionColor'], '#F4A300'], window.portfolioVisibility['#F4A300'] ? 0.4 : 0,
             0.4 // Default opacity for non-portfolio connections
@@ -440,7 +440,7 @@ function updatePortfolioLayerVisibility() {
     if (map.getLayer('collective-gp-connection-lines')) {
         const collectiveGPOpacityExpression = [
             'case',
-            ['==', ['get', 'portfolioColor'], '#23F2F6'], window.portfolioVisibility['#23F2F6'] ? 0.3 : 0,
+            ['==', ['get', 'portfolioColor'], '#209DB5'], window.portfolioVisibility['#209DB5'] ? 0.3 : 0,
             ['==', ['get', 'portfolioColor'], '#F85555'], window.portfolioVisibility['#F85555'] ? 0.3 : 0,
             ['==', ['get', 'portfolioColor'], '#F4A300'], window.portfolioVisibility['#F4A300'] ? 0.3 : 0,
             0.3 // Default opacity for category mode or unassigned

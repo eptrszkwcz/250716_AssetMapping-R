@@ -42,6 +42,10 @@
     /* transform: translateY(-1px) !important; */
 }
 
+#portfolioColorToggle {
+    width: 156px !important;
+}
+
 /* Dropdown styles */
 .dropdown {
     position: relative;
@@ -51,6 +55,8 @@
 .dropdown-btn {
     position: relative;
 }
+
+
 
 .dropdown-btn::after {
     content: '▼';
