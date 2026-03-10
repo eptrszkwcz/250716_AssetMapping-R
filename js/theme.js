@@ -29,6 +29,17 @@ function applyTheme() {
     if (legend) {
         legend.style.backgroundColor = colors.legendBg;
     }
+
+    // Apply filter panel styles (match legend)
+    const filterPanel = document.querySelector('.filter-panel');
+    if (filterPanel) {
+        filterPanel.style.backgroundColor = colors.legendBg;
+    }
+
+    const filterPanelH4 = document.querySelector('.filter-panel h4');
+    if (filterPanelH4) {
+        filterPanelH4.style.color = colors.legendText;
+    }
     
     const legendH4 = document.querySelector('.legend h4');
     if (legendH4) {

@@ -35,3 +35,13 @@ body.light-theme .legend-item {
     color: #4B6360;
 }
 
+/* Light theme filter panel (match legend) */
+body.light-theme .filter-panel {
+    background: #f8f9fa;
+    border: 1px solid rgba(75, 99, 96, 0.3);
+}
+
+body.light-theme .filter-panel h4 {
+    color: #4B6360;
+}
+

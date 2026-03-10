@@ -1,0 +1,28 @@
+/* Filter Panel
+   =============
+   Matches legend panel: same padding, margin, width, fill, stroke, corner radius.
+   Positioned at top right of the map. */
+
+.filter-panel-container {
+    position: absolute;
+    top: 30px;
+    right: 20px;
+    overflow-y: auto;
+    min-width: 300px;
+    z-index: 1000;
+}
+
+.filter-panel {
+    background: #0A1B19;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    min-width: 280px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.filter-panel h4 {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: #5B8E83;
+}

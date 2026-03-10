@@ -42,9 +42,6 @@ async function init() {
             showZoom: true
         });
         map.addControl(zoomControl, 'top-left');
-        
-        // Add fullscreen control
-        map.addControl(new mapboxgl.FullscreenControl(), 'top-right');
 
         // Wait for map to load
         map.on('load', async () => {
