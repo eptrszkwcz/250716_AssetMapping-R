@@ -297,6 +297,9 @@ async function reloadColoringLayers() {
         if (typeof reapplyPortfolioCompanyFilter === 'function') {
             reapplyPortfolioCompanyFilter();
         }
+        if (typeof applyCategoryFilter === 'function') {
+            applyCategoryFilter();
+        }
     } catch (error) {
         console.error('Error reloading coloring layers:', error);
     }

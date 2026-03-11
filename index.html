@@ -65,8 +65,22 @@
             <div id="map" class="map-container"></div>
 
             <div class="filter-panel-container">
+                <div class="filter-panel filter-panel-all-points">
+                    <h4>Filter all Points</h4>
+                    <div class="filter-block filter-multiselect" data-filter-id="category">
+                        <div class="filter-multiselect-header">
+                            <span class="filter-multiselect-label">Category</span>
+                            <span class="filter-multiselect-actions">
+                                <button type="button" class="filter-multiselect-select-all">Select all</button>
+                                <span class="filter-multiselect-sep">/</span>
+                                <button type="button" class="filter-multiselect-unselect-all">Unselect all</button>
+                            </span>
+                        </div>
+                        <div class="filter-multiselect-options"></div>
+                    </div>
+                </div>
                 <div class="filter-panel">
-                    <h4>Filter</h4>
+                    <h4>Filter Portfolio Companies</h4>
                     <div class="filter-block filter-multiselect" data-filter-id="portfolio">
                         <div class="filter-multiselect-header">
                             <span class="filter-multiselect-label">Portfolio</span>
@@ -182,6 +196,7 @@
     <script src="js/legend.js"></script>
     <script src="js/filterConfig.js"></script>
     <script src="js/filters.js"></script>
+    <script src="js/categoryFilter.js"></script>
     <script src="js/eventHandlers.js"></script>
     <script src="js/mapManager.js"></script>
     <script src="js/main.js"></script>

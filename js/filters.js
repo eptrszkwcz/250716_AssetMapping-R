@@ -79,10 +79,18 @@ function buildFilterExpression() {
     return ['all', ...parts];
 }
 
+const PORTFOLIO_CONNECTION_LAYER_IDS = ['portfolio-connection-lines', 'portfolio-connection-lines-hover'];
+
 function applyFilter() {
     if (!map || !map.getLayer(PORTFOLIO_COMPANIES_LAYER_ID)) return;
     const expr = buildFilterExpression();
-    map.setFilter(PORTFOLIO_COMPANIES_LAYER_ID, expr === null ? ['has', 'id'] : expr);
+    const filterExpr = expr === null ? ['has', 'id'] : expr;
+    map.setFilter(PORTFOLIO_COMPANIES_LAYER_ID, filterExpr);
+    PORTFOLIO_CONNECTION_LAYER_IDS.forEach(layerId => {
+        if (map.getLayer(layerId)) {
+            map.setFilter(layerId, filterExpr);
+        }
+    });
 }
 
 function setStateFromMultiselect(filterId, selectedValues) {

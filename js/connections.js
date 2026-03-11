@@ -1,6 +1,56 @@
 // Connection Lines Between Points
 // ================================
 
+// Derive filter properties from a portfolio company row (must match mapRenderer logic for filtering)
+function getPortfolioCompanyFilterProperties(portfolio) {
+    const props = {};
+    const portfolioKeys = ['Portfolio', 'portfolio', 'Portfolio Name', 'GP', 'Fund', 'Venture Partner'];
+    for (const k of portfolioKeys) {
+        const v = portfolio[k];
+        if (v !== undefined && v !== null && String(v).trim() !== '') {
+            props.Portfolio = String(v).trim();
+            break;
+        }
+    }
+    const industryVal = (portfolio['Industry'] || portfolio['industry'] || '').trim();
+    if (industryVal) props.Industry = industryVal;
+    const valuationKeys = ['Valuation ($mm)', 'Valuation ($MM)', 'Valuation'];
+    for (const key of valuationKeys) {
+        const raw = portfolio[key];
+        if (raw !== undefined && raw !== null && String(raw).trim() !== '') {
+            const s = String(raw).trim();
+            if (/^\d+(\+)?$/.test(s) || /^\d+(\.\d+)?$/.test(s)) {
+                let valuationNum = parseFloat(s.replace('+', '')) || undefined;
+                if (valuationNum !== undefined && valuationNum > 1000) valuationNum = 1000;
+                if (valuationNum !== undefined) props.ValuationNum = valuationNum;
+            }
+            break;
+        }
+    }
+    const dateKeys = ['First Financing Date', 'First financing date'];
+    for (const key of dateKeys) {
+        const raw = portfolio[key];
+        if (raw !== undefined && raw !== null && String(raw).trim() !== '') {
+            const s = String(raw).trim();
+            const matchFour = s.match(/\d{4}/);
+            if (matchFour) {
+                props.FirstFinancingYear = parseInt(matchFour[0], 10);
+            } else {
+                const allTwo = s.match(/\b(\d{2})\b/g);
+                const allOne = s.match(/\b(\d{1,2})\b/g);
+                const candidates = allTwo && allTwo.length ? allTwo : (allOne && allOne.length ? allOne : null);
+                if (candidates && candidates.length > 0) {
+                    const lastNum = candidates[candidates.length - 1];
+                    let y = parseInt(lastNum, 10);
+                    props.FirstFinancingYear = y < 50 ? 2000 + y : 1900 + y;
+                }
+            }
+            if (props.FirstFinancingYear !== undefined) break;
+        }
+    }
+    return props;
+}
+
 // Create connection lines between Allocator LPs and Collective Locations
 function createConnectionLines(allocatorPoints, collectivePoints) {
     const connectionLayerId = 'connection-lines';
@@ -126,6 +176,7 @@ function createPortfolioConnections(portfolioPoints, gpPoints) {
                 // Get portfolio color for the connection line
                 const gpName = nearestGP['Company Name'] || nearestGP['company name'] || nearestGP['Company'] || 'Unknown GP';
                 const connectionColor = isPortfolioColorMode ? (portfolioColorMap[gpName] || '#006FFF') : '#006FFF';
+                const filterProps = getPortfolioCompanyFilterProperties(portfolio);
                 
                 connections.push({
                     type: 'Feature',
@@ -141,7 +192,8 @@ function createPortfolioConnections(portfolioPoints, gpPoints) {
                         portfolioName: portfolioName,
                         gpName: gpName,
                         distance: Math.round(shortestDistance),
-                        connectionColor: connectionColor
+                        connectionColor: connectionColor,
+                        ...filterProps
                     }
                 });
             }

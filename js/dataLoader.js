@@ -98,7 +98,10 @@ async function loadAllDataFromGoogleSheets() {
         // Step 5: Initialize connection line visibility after all layers are created
         updateConnectionLineVisibility();
         
-        // Step 6: Initialize portfolio company filters (UI and apply filter to points-portfolio-companies)
+        // Step 6: Initialize category filter (Filter all Points) and portfolio company filters
+        if (typeof initCategoryFilter === 'function') {
+            initCategoryFilter();
+        }
         if (typeof initPortfolioCompanyFilters === 'function') {
             initPortfolioCompanyFilters();
         }

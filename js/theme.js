@@ -30,16 +30,15 @@ function applyTheme() {
         legend.style.backgroundColor = colors.legendBg;
     }
 
-    // Apply filter panel styles (match legend)
-    const filterPanel = document.querySelector('.filter-panel');
-    if (filterPanel) {
-        filterPanel.style.backgroundColor = colors.legendBg;
-    }
-
-    const filterPanelH4 = document.querySelector('.filter-panel h4');
-    if (filterPanelH4) {
-        filterPanelH4.style.color = colors.legendText;
-    }
+    // Apply filter panel styles (match legend) to all filter panels
+    const filterPanels = document.querySelectorAll('.filter-panel');
+    filterPanels.forEach(panel => {
+        panel.style.backgroundColor = colors.legendBg;
+    });
+    const filterPanelH4s = document.querySelectorAll('.filter-panel h4');
+    filterPanelH4s.forEach(h4 => {
+        h4.style.color = colors.legendText;
+    });
     
     const legendH4 = document.querySelector('.legend h4');
     if (legendH4) {
