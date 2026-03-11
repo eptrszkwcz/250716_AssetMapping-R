@@ -95,8 +95,13 @@ async function loadAllDataFromGoogleSheets() {
         // Step 4: Set the proper draw order for all layers
         setLayerDrawOrder();
         
-        // Step 5: Setup legend toggle functionality after all layers are created
-        setupLegendToggles();
+        // Step 5: Initialize connection line visibility after all layers are created
+        updateConnectionLineVisibility();
+        
+        // Step 6: Initialize portfolio company filters (UI and apply filter to points-portfolio-companies)
+        if (typeof initPortfolioCompanyFilters === 'function') {
+            initPortfolioCompanyFilters();
+        }
         
     } catch (error) {
         console.error('Error loading data:', error);

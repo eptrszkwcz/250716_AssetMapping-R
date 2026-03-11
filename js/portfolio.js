@@ -112,14 +112,6 @@ function ensureColorModeLayersVisible() {
         
         // Then update portfolio-specific visibility states
         setTimeout(() => {
-            const portfolio1Toggle = document.querySelector('input[data-portfolio="portfolio1"]');
-            const portfolio2Toggle = document.querySelector('input[data-portfolio="portfolio2"]');
-            const portfolio3Toggle = document.querySelector('input[data-portfolio="portfolio3"]');
-            
-            if (portfolio1Toggle) portfolio1Toggle.checked = true;
-            if (portfolio2Toggle) portfolio2Toggle.checked = true;
-            if (portfolio3Toggle) portfolio3Toggle.checked = true;
-            
             // Initialize portfolio visibility to all visible
             initializePortfolioVisibility();
             window.portfolioVisibility['#209DB5'] = true; // General Catalyst
@@ -149,20 +141,7 @@ function ensureColorModeLayersVisible() {
             }
         });
         
-        // Update the legend toggle switches to match
         setTimeout(() => {
-            // Update GP layer toggle
-            const gpToggle = document.querySelector('input[data-layer="points-general-partner-location"]');
-            if (gpToggle) {
-                gpToggle.checked = true;
-            }
-            
-            // Update Portfolio Companies layer toggle
-            const portfolioToggle = document.querySelector('input[data-layer="points-portfolio-companies"]');
-            if (portfolioToggle) {
-                portfolioToggle.checked = true;
-            }
-            
             // Update collective-GP connection line colors for category mode
             updateCollectiveGPConnectionColors();
             
@@ -314,6 +293,10 @@ async function reloadColoringLayers() {
         // Set proper draw order
         setLayerDrawOrder();
         
+        // Re-apply portfolio company filters (layer was recreated)
+        if (typeof reapplyPortfolioCompanyFilter === 'function') {
+            reapplyPortfolioCompanyFilter();
+        }
     } catch (error) {
         console.error('Error reloading coloring layers:', error);
     }

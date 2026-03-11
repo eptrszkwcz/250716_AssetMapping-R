@@ -67,7 +67,44 @@
             <div class="filter-panel-container">
                 <div class="filter-panel">
                     <h4>Filter</h4>
-                    <!-- Filter content can go here -->
+                    <div class="filter-block filter-multiselect" data-filter-id="portfolio">
+                        <div class="filter-multiselect-header">
+                            <span class="filter-multiselect-label">Portfolio</span>
+                            <span class="filter-multiselect-actions">
+                                <button type="button" class="filter-multiselect-select-all">Select all</button>
+                                <span class="filter-multiselect-sep">/</span>
+                                <button type="button" class="filter-multiselect-unselect-all">Unselect all</button>
+                            </span>
+                        </div>
+                        <div class="filter-multiselect-options"></div>
+                    </div>
+                    <div class="filter-block filter-multiselect" data-filter-id="sector">
+                        <div class="filter-multiselect-header">
+                            <span class="filter-multiselect-label">Sector</span>
+                            <span class="filter-multiselect-actions">
+                                <button type="button" class="filter-multiselect-select-all">Select all</button>
+                                <span class="filter-multiselect-sep">/</span>
+                                <button type="button" class="filter-multiselect-unselect-all">Unselect all</button>
+                            </span>
+                        </div>
+                        <div class="filter-multiselect-options"></div>
+                    </div>
+                    <div class="filter-block filter-slider" data-filter-id="valuation">
+                        <div class="filter-slider-label">Valuation ($mm)</div>
+                        <div class="filter-slider-range">
+                            <input type="range" class="filter-slider-input-min" min="0" max="1000" step="50" value="0" aria-label="Valuation min">
+                            <input type="range" class="filter-slider-input-max" min="0" max="1000" step="50" value="1000" aria-label="Valuation max">
+                        </div>
+                        <div class="filter-slider-values"></div>
+                    </div>
+                    <div class="filter-block filter-slider" data-filter-id="firstFinancingDate">
+                        <div class="filter-slider-label">First Financing Date</div>
+                        <div class="filter-slider-range">
+                            <input type="range" class="filter-slider-input-min" min="1999" max="2026" step="1" value="1999" aria-label="Year min">
+                            <input type="range" class="filter-slider-input-max" min="1999" max="2026" step="1" value="2026" aria-label="Year max">
+                        </div>
+                        <div class="filter-slider-values"></div>
+                    </div>
                 </div>
             </div>
             
@@ -89,26 +126,14 @@
                 <div class="legend-item">
                     <span class="legend-color" style="background-color: #03B570;"></span>
                     <span>Collective Global</span>
-                    <label class="toggle-switch">
-                        <input type="checkbox" checked data-layer="points-collective-locations">
-                        <span class="toggle-slider"></span>
-                    </label>
                 </div>
                 <div class="legend-item">
                     <span class="legend-color" style="background-color: #ED5FAB;"></span>
                     <span>Allocator Partner</span>
-                    <label class="toggle-switch">
-                        <input type="checkbox" checked data-layer="points-allocator-lps">
-                        <span class="toggle-slider"></span>
-                    </label>
                 </div>
                 <div class="legend-item">
                     <span class="legend-color" style="background-color: #9B59B6;"></span>
                     <span>Collective's Direct Investment</span>
-                    <label class="toggle-switch">
-                        <input type="checkbox" checked data-layer="points-direct-investments">
-                        <span class="toggle-slider"></span>
-                    </label>
                 </div>
                 <div class="line-divider"></div>
                 
@@ -117,18 +142,10 @@
                     <div class="legend-item">
                         <span class="legend-color" style="background-color: #FFD600;"></span>
                         <span>Partner Venture Manager</span>
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked data-layer="points-general-partner-location">
-                            <span class="toggle-slider"></span>
-                        </label>
                     </div>
                     <div class="legend-item">
                         <span class="legend-color" style="background-color: #006FFF;"></span>
                         <span>Underlying Portfolio Company</span>
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked data-layer="points-portfolio-companies">
-                            <span class="toggle-slider"></span>
-                        </label>
                     </div>
                 </div>
                 
@@ -137,26 +154,14 @@
                     <div class="legend-item">
                         <span class="legend-color" style="background-color: #209DB5;"></span>
                         <span>Portfolio 1</span>
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked data-portfolio="portfolio1">
-                            <span class="toggle-slider"></span>
-                        </label>
                     </div>
                     <div class="legend-item">
                         <span class="legend-color" style="background-color: #F85555;"></span>
                         <span>Portfolio 2</span>
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked data-portfolio="portfolio2">
-                            <span class="toggle-slider"></span>
-                        </label>
                     </div>
                     <div class="legend-item">
                         <span class="legend-color" style="background-color: #F4A300;"></span>
                         <span>Portfolio 3</span>
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked data-portfolio="portfolio3">
-                            <span class="toggle-slider"></span>
-                        </label>
                     </div>
                 </div>
             </div>
@@ -175,6 +180,8 @@
     <script src="js/mapRenderer.js"></script>
     <script src="js/connections.js"></script>
     <script src="js/legend.js"></script>
+    <script src="js/filterConfig.js"></script>
+    <script src="js/filters.js"></script>
     <script src="js/eventHandlers.js"></script>
     <script src="js/mapManager.js"></script>
     <script src="js/main.js"></script>

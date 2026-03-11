@@ -26,3 +26,117 @@
     font-size: 0.9rem;
     color: #5B8E83;
 }
+
+/* Filter block spacing */
+.filter-block {
+    margin-bottom: 1rem;
+}
+
+.filter-block:last-child {
+    margin-bottom: 0;
+}
+
+/* Multi-select filter */
+.filter-multiselect-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.filter-multiselect-label {
+    font-size: 0.85rem;
+    color: #5B8E83;
+    font-weight: 500;
+}
+
+.filter-multiselect-actions {
+    font-size: 0.8rem;
+}
+
+.filter-multiselect-actions button {
+    background: none;
+    border: none;
+    color: #43645D;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+}
+
+.filter-multiselect-actions button:hover {
+    color: #5B8E83;
+}
+
+.filter-multiselect-sep {
+    color: rgba(255, 255, 255, 0.4);
+    margin: 0 0.2rem;
+}
+
+.filter-multiselect-options {
+    max-height: 140px;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    padding: 0.25rem;
+}
+
+.filter-multiselect-options::-webkit-scrollbar {
+    width: 4px;
+}
+
+.filter-multiselect-options::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+}
+
+.filter-multiselect-options::-webkit-scrollbar-thumb {
+    background: rgba(67, 100, 93, 0.5);
+    border-radius: 2px;
+}
+
+.filter-multiselect-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.35rem;
+    font-size: 0.8rem;
+    color: #43645D;
+}
+
+.filter-multiselect-option input {
+    margin: 0;
+    cursor: pointer;
+}
+
+.filter-multiselect-option label {
+    cursor: pointer;
+    flex: 1;
+}
+
+/* Slider filter */
+.filter-slider-label {
+    font-size: 0.85rem;
+    color: #5B8E83;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.filter-slider-range {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.filter-slider-range input[type="range"] {
+    flex: 1;
+    min-width: 0;
+    accent-color: #5B8E83;
+}
+
+.filter-slider-values {
+    font-size: 0.8rem;
+    color: #43645D;
+}

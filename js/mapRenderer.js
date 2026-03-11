@@ -75,19 +75,75 @@ function displayPoints(data, tabName, config) {
                 }
             }
             
+            // Derived properties for Portfolio Companies filtering
+            const baseProps = {
+                ...properties,
+                id: index,
+                tabName: tabName,
+                'AUM ($bn)': foundAUM || 1,
+                portfolioColor: portfolioColor
+            };
+            if (tabName === 'Portfolio Companies') {
+                const portfolioKeys = ['Portfolio', 'portfolio', 'Portfolio Name', 'GP', 'Fund', 'Venture Partner'];
+                let portfolioVal = '';
+                for (const k of portfolioKeys) {
+                    const v = point[k];
+                    if (v !== undefined && v !== null && String(v).trim() !== '') {
+                        portfolioVal = String(v).trim();
+                        break;
+                    }
+                }
+                if (portfolioVal) baseProps.Portfolio = portfolioVal;
+                const industryVal = (point['Industry'] || point['industry'] || '').trim();
+                if (industryVal) baseProps.Industry = industryVal;
+                else delete baseProps.Industry;
+                const valuationKeys = ['Valuation ($mm)', 'Valuation ($MM)', 'Valuation'];
+                let valuationNum = undefined;
+                for (const key of valuationKeys) {
+                    const raw = properties[key];
+                    if (raw !== undefined && raw !== null && String(raw).trim() !== '') {
+                        const s = String(raw).trim();
+                        if (/^\d+(\+)?$/.test(s) || /^\d+(\.\d+)?$/.test(s)) {
+                            valuationNum = parseFloat(s.replace('+', '')) || undefined;
+                            if (valuationNum > 1000) valuationNum = 1000;
+                        }
+                        break;
+                    }
+                }
+                if (valuationNum !== undefined) baseProps.ValuationNum = valuationNum;
+                const dateKeys = ['First Financing Date', 'First financing date'];
+                let firstFinancingYear = undefined;
+                for (const key of dateKeys) {
+                    const raw = properties[key];
+                    if (raw !== undefined && raw !== null && String(raw).trim() !== '') {
+                        const s = String(raw).trim();
+                        const matchFour = s.match(/\d{4}/);
+                        if (matchFour) {
+                            firstFinancingYear = parseInt(matchFour[0], 10);
+                        } else {
+                            // DD-Mon-YY or D-Month-YY: year is the last number (YY), not the day
+                            const allTwo = s.match(/\b(\d{2})\b/g);
+                            const allOne = s.match(/\b(\d{1,2})\b/g);
+                            const candidates = allTwo && allTwo.length ? allTwo : (allOne && allOne.length ? allOne : null);
+                            if (candidates && candidates.length > 0) {
+                                const lastNum = candidates[candidates.length - 1];
+                                let y = parseInt(lastNum, 10);
+                                firstFinancingYear = y < 50 ? 2000 + y : 1900 + y;
+                            }
+                        }
+                        if (firstFinancingYear !== undefined) break;
+                    }
+                }
+                if (firstFinancingYear !== undefined) baseProps.FirstFinancingYear = firstFinancingYear;
+            }
+            
             return {
                 type: 'Feature',
                 geometry: {
                     type: 'Point',
                     coordinates: [lng, lat]
                 },
-                properties: {
-                    ...properties,
-                    id: index,
-                    tabName: tabName,
-                    'AUM ($bn)': foundAUM || 1,
-                    portfolioColor: portfolioColor
-                }
+                properties: baseProps
             };
         })
     };
