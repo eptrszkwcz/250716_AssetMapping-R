@@ -157,48 +157,135 @@ function initMultiselect(block, config) {
 }
 
 function initSlider(block, config) {
-    const minInput = block.querySelector('.filter-slider-input-min');
-    const maxInput = block.querySelector('.filter-slider-input-max');
+    const dualTrack = block.querySelector('.filter-slider-dual-track');
     const valuesEl = block.querySelector('.filter-slider-values');
-    if (!minInput || !maxInput) return;
+    if (!dualTrack) return;
 
     const isValuation = config.id === 'valuation';
-    const maxVal = config.max;
+    const range = config.max - config.min;
+    const step = config.step || 1;
 
-    function clampMinMax() {
-        let min = parseInt(minInput.value, 10);
-        let max = parseInt(maxInput.value, 10);
-        if (min > max) {
-            minInput.value = max;
-            maxInput.value = min;
-            min = parseInt(minInput.value, 10);
-            max = parseInt(maxInput.value, 10);
-        }
-        return { min, max };
+    const trackEl = document.createElement('div');
+    trackEl.className = 'filter-slider-track';
+    const fillEl = document.createElement('div');
+    fillEl.className = 'filter-slider-track-fill';
+    const thumbMin = document.createElement('button');
+    thumbMin.type = 'button';
+    thumbMin.className = 'filter-slider-thumb';
+    thumbMin.setAttribute('data-thumb', 'min');
+    thumbMin.setAttribute('aria-valuemin', config.min);
+    thumbMin.setAttribute('aria-valuemax', config.max);
+    thumbMin.setAttribute('aria-label', 'Minimum value');
+    const thumbMax = document.createElement('button');
+    thumbMax.type = 'button';
+    thumbMax.className = 'filter-slider-thumb';
+    thumbMax.setAttribute('data-thumb', 'max');
+    thumbMax.setAttribute('aria-valuemin', config.min);
+    thumbMax.setAttribute('aria-valuemax', config.max);
+    thumbMax.setAttribute('aria-label', 'Maximum value');
+    trackEl.appendChild(fillEl);
+    trackEl.appendChild(thumbMin);
+    trackEl.appendChild(thumbMax);
+    dualTrack.appendChild(trackEl);
+
+    let minVal = config.min;
+    let maxVal = config.max;
+    let draggingThumb = null;
+
+    function valueToPct(value) {
+        return ((value - config.min) / range) * 100;
+    }
+
+    function snapToStep(value) {
+        const n = Math.round((value - config.min) / step) * step + config.min;
+        return Math.max(config.min, Math.min(config.max, n));
+    }
+
+    function positionToValue(clientX) {
+        const rect = trackEl.getBoundingClientRect();
+        const pct = (clientX - rect.left) / rect.width;
+        const value = config.min + pct * range;
+        return snapToStep(value);
+    }
+
+    function updateUI() {
+        const minPct = valueToPct(minVal);
+        const maxPct = valueToPct(maxVal);
+        fillEl.style.left = minPct + '%';
+        fillEl.style.width = (maxPct - minPct) + '%';
+        thumbMin.style.left = minPct + '%';
+        thumbMax.style.left = maxPct + '%';
+        thumbMin.setAttribute('aria-valuenow', minVal);
+        thumbMax.setAttribute('aria-valuenow', maxVal);
     }
 
     function updateDisplay() {
-        const { min, max } = clampMinMax();
         if (valuesEl) {
-            if (isValuation && max >= maxVal) {
-                valuesEl.textContent = `${min} – ${config.noUpperLimitLabel || '1000+'}`;
+            if (isValuation && maxVal >= config.max) {
+                valuesEl.textContent = minVal + ' – ' + (config.noUpperLimitLabel || '1000+');
             } else {
-                valuesEl.textContent = `${min} – ${max}`;
+                valuesEl.textContent = minVal + ' – ' + maxVal;
             }
         }
-        setStateFromSlider(config.id, min, isValuation && max >= maxVal ? null : max);
+        setStateFromSlider(config.id, minVal, isValuation && maxVal >= config.max ? null : maxVal);
     }
 
-    minInput.addEventListener('input', () => {
-        const min = parseInt(minInput.value, 10);
-        if (parseInt(maxInput.value, 10) < min) maxInput.value = min;
+    function handleMove(e) {
+        if (e.cancelable && e.touches) e.preventDefault();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const value = positionToValue(clientX);
+        if (draggingThumb === 'min') {
+            minVal = value;
+            if (minVal > maxVal) maxVal = minVal;
+        } else {
+            maxVal = value;
+            if (maxVal < minVal) minVal = maxVal;
+        }
+        updateUI();
         updateDisplay();
-    });
-    maxInput.addEventListener('input', () => {
-        const max = parseInt(maxInput.value, 10);
-        if (parseInt(minInput.value, 10) > max) minInput.value = max;
+    }
+
+    function handleEnd() {
+        draggingThumb = null;
+        document.removeEventListener('mousemove', handleMove);
+        document.removeEventListener('mouseup', handleEnd);
+        document.removeEventListener('touchmove', handleMove, { passive: false });
+        document.removeEventListener('touchend', handleEnd);
+    }
+
+    function startDrag(which) {
+        draggingThumb = which;
+        document.addEventListener('mousemove', handleMove);
+        document.addEventListener('mouseup', handleEnd);
+        document.addEventListener('touchmove', handleMove, { passive: false });
+        document.addEventListener('touchend', handleEnd);
+    }
+
+    function handleKeydown(which, e) {
+        const delta = (e.key === 'ArrowRight' || e.key === 'ArrowUp') ? step : (e.key === 'ArrowLeft' || e.key === 'ArrowDown') ? -step : 0;
+        if (delta === 0) return;
+        e.preventDefault();
+        if (which === 'min') {
+            minVal = snapToStep(minVal + delta);
+            minVal = Math.max(config.min, Math.min(maxVal, minVal));
+            if (minVal > maxVal) maxVal = minVal;
+        } else {
+            maxVal = snapToStep(maxVal + delta);
+            maxVal = Math.max(minVal, Math.min(config.max, maxVal));
+            if (maxVal < minVal) minVal = maxVal;
+        }
+        updateUI();
         updateDisplay();
-    });
+    }
+    thumbMin.addEventListener('keydown', (e) => handleKeydown('min', e));
+    thumbMax.addEventListener('keydown', (e) => handleKeydown('max', e));
+
+    thumbMin.addEventListener('mousedown', (e) => { e.preventDefault(); startDrag('min'); });
+    thumbMax.addEventListener('mousedown', (e) => { e.preventDefault(); startDrag('max'); });
+    thumbMin.addEventListener('touchstart', (e) => { startDrag('min'); }, { passive: true });
+    thumbMax.addEventListener('touchstart', (e) => { startDrag('max'); }, { passive: true });
+
+    updateUI();
     updateDisplay();
 }
 

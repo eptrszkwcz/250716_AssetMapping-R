@@ -35,6 +35,10 @@ body.light-theme .legend-item {
     color: #4B6360;
 }
 
+body.light-theme .legend-shade-label {
+    color: #4B6360;
+}
+
 /* Light theme filter panel (match legend) */
 body.light-theme .filter-panel {
     background: #f8f9fa;
@@ -43,5 +47,11 @@ body.light-theme .filter-panel {
 
 body.light-theme .filter-panel h4 {
     color: #4B6360;
+}
+
+/* Light theme dual-thumb slider (selected = A, filtered out = B) */
+body.light-theme .filter-panel {
+    --filter-slider-color-a: #4B6360;
+    --filter-slider-color-b: rgba(75, 99, 96, 0.2);
 }
 

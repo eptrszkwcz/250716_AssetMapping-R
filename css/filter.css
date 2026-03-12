@@ -22,6 +22,8 @@
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     min-width: 280px;
     border: 1px solid rgba(255, 255, 255, 0.3);
+    --filter-slider-color-a: #5B8E83;
+    --filter-slider-color-b: rgba(255, 255, 255, 0.2);
 }
 
 .filter-panel h4 {
@@ -131,16 +133,54 @@
 }
 
 .filter-slider-range {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
     margin-bottom: 0.25rem;
 }
 
-.filter-slider-range input[type="range"] {
-    flex: 1;
-    min-width: 0;
-    accent-color: #5B8E83;
+/* Dual-thumb range slider: single track, color A = selected, color B = filtered out */
+.filter-slider-dual-track {
+    position: relative;
+    width: 100%;
+    padding: 8px 0;
+}
+
+.filter-slider-track {
+    position: relative;
+    width: 100%;
+    height: 8px;
+    background: var(--filter-slider-color-b);
+    border-radius: 4px;
+}
+
+.filter-slider-track-fill {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    background: var(--filter-slider-color-a);
+    border-radius: 4px;
+    pointer-events: none;
+}
+
+.filter-slider-thumb {
+    position: absolute;
+    top: 50%;
+    width: 18px;
+    height: 18px;
+    margin-left: -9px;
+    margin-top: -9px;
+    background: var(--filter-slider-color-a);
+    border-radius: 50%;
+    cursor: grab;
+    z-index: 2;
+    border: none;
+}
+
+.filter-slider-thumb:active {
+    cursor: grabbing;
+}
+
+.filter-slider-thumb:focus {
+    outline: 2px solid var(--filter-slider-color-a);
+    outline-offset: 2px;
 }
 
 .filter-slider-values {

@@ -10,10 +10,11 @@ async function init() {
         // Always default to category mode on page load
         isPortfolioColorMode = false;
         
-        // Update portfolio color button text
-        const portfolioColorToggleBtn = document.getElementById('portfolioColorToggle');
-        if (portfolioColorToggleBtn) {
-            portfolioColorToggleBtn.textContent = 'Color by Portfolio';
+        // Set initial legend shade label and toggle, and wire toggle to togglePortfolioColor
+        updateLegendShadeLabelAndToggle();
+        const legendShadeToggle = document.getElementById('legendShadeToggle');
+        if (legendShadeToggle) {
+            legendShadeToggle.addEventListener('change', togglePortfolioColor);
         }
         
         // Set initial dropdown content

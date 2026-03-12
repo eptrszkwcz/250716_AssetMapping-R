@@ -24,8 +24,6 @@
         <header class="header">
             <h1>Collective Global Asset Mapping</h1>
             <div class="controls">
-                <button id="portfolioColorToggle" class="btn" onclick="togglePortfolioColor()">Color by Portfolio</button>
-                <!-- <button id="latLonButton" class="btn" onclick="logMapCenter()">lat/lon</button> -->
                 <div class="dropdown">
                     <button id="zoomToDropdown" class="btn dropdown-btn" onclick="toggleZoomToDropdown()">Zoom To</button>
                     <div id="zoomToDropdownMenu" class="dropdown-menu">
@@ -106,16 +104,14 @@
                     <div class="filter-block filter-slider" data-filter-id="valuation">
                         <div class="filter-slider-label">Valuation ($mm)</div>
                         <div class="filter-slider-range">
-                            <input type="range" class="filter-slider-input-min" min="0" max="1000" step="50" value="0" aria-label="Valuation min">
-                            <input type="range" class="filter-slider-input-max" min="0" max="1000" step="50" value="1000" aria-label="Valuation max">
+                            <div class="filter-slider-dual-track" role="group" aria-label="Valuation range"></div>
                         </div>
                         <div class="filter-slider-values"></div>
                     </div>
                     <div class="filter-block filter-slider" data-filter-id="firstFinancingDate">
                         <div class="filter-slider-label">First Financing Date</div>
                         <div class="filter-slider-range">
-                            <input type="range" class="filter-slider-input-min" min="1999" max="2026" step="1" value="1999" aria-label="Year min">
-                            <input type="range" class="filter-slider-input-max" min="1999" max="2026" step="1" value="2026" aria-label="Year max">
+                            <div class="filter-slider-dual-track" role="group" aria-label="First Financing Date range"></div>
                         </div>
                         <div class="filter-slider-values"></div>
                     </div>
@@ -150,7 +146,13 @@
                     <span>Collective's Direct Investment</span>
                 </div>
                 <div class="line-divider"></div>
-                
+                <div class="legend-shade-row">
+                    <span id="legendShadeLabel" class="legend-shade-label">Points Shaded by Category</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="legendShadeToggle" aria-label="Toggle shading by portfolio or category">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
                 <!-- Category Mode Content (GP and Portfolio Company legend items) -->
                 <div id="legendCategoryModeContent">
                     <div class="legend-item">

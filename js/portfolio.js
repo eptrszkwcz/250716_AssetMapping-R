@@ -41,14 +41,21 @@ function generatePortfolioColors(gpPoints) {
     window.portfolioNames = uniquePortfolioNames.slice(0, 3); // Only first 3 for now
 }
 
+function updateLegendShadeLabelAndToggle() {
+    const labelEl = document.getElementById('legendShadeLabel');
+    const toggleEl = document.getElementById('legendShadeToggle');
+    if (labelEl) {
+        labelEl.textContent = isPortfolioColorMode ? 'Points Shaded by Portfolio' : 'Points Shaded by Category';
+    }
+    if (toggleEl) {
+        toggleEl.checked = isPortfolioColorMode;
+    }
+}
+
 function togglePortfolioColor() {
     isPortfolioColorMode = !isPortfolioColorMode;
     
-    // Update button text
-    const portfolioColorToggleBtn = document.getElementById('portfolioColorToggle');
-    if (portfolioColorToggleBtn) {
-        portfolioColorToggleBtn.textContent = isPortfolioColorMode ? 'Color by Category' : 'Color by Portfolio';
-    }
+    updateLegendShadeLabelAndToggle();
     
     // Switch dropdown content
     updateDropdownContent();
@@ -89,63 +96,28 @@ function updateDropdownContent() {
     }
 }
 
-// Ensure appropriate layers are visible when switching color modes
+// Update coloring/connection state when switching color modes (do not change point layer visibility; respect Filter all Points)
 function ensureColorModeLayersVisible() {
-    // Wait for the map to be ready
     if (!map) return;
     
+    // Re-apply category filter so Partner Venture Manager and Underlying Portfolio Company stay filtered if user had them off
+    if (typeof applyCategoryFilter === 'function') {
+        applyCategoryFilter();
+    }
+    
     if (isPortfolioColorMode) {
-        // Switching TO Portfolio Mode: Turn on all three portfolio toggles
-        // (General Catalyst, Drive Capital, Second Sight Ventures)
-        
-        // Ensure the base layers are visible on the map
-        const layersToEnable = [
-            'points-general-partner-location',
-            'points-portfolio-companies'
-        ];
-        
-        layersToEnable.forEach(layerId => {
-            if (map.getLayer(layerId)) {
-                map.setLayoutProperty(layerId, 'visibility', 'visible');
-            }
-        });
-        
-        // Then update portfolio-specific visibility states
         setTimeout(() => {
-            // Initialize portfolio visibility to all visible
             initializePortfolioVisibility();
-            window.portfolioVisibility['#209DB5'] = true; // General Catalyst
-            window.portfolioVisibility['#F85555'] = true; // Drive Capital
-            window.portfolioVisibility['#F4A300'] = true; // Second Sight Ventures
-            
-            // Update map layer visibility (opacity expressions)
+            window.portfolioVisibility['#209DB5'] = true;
+            window.portfolioVisibility['#F85555'] = true;
+            window.portfolioVisibility['#F4A300'] = true;
             updatePortfolioLayerVisibility();
-            
-            // Update collective-GP connection line colors for portfolio mode
             updateCollectiveGPConnectionColors();
-            
-            // Also update connection lines visibility
             updateConnectionLineVisibility();
         }, 50);
     } else {
-        // Switching TO Category Mode: Turn on Partner Venture Manager and Underlying Portfolio Company
-        const layersToEnable = [
-            'points-general-partner-location',
-            'points-portfolio-companies'
-        ];
-        
-        // Turn on the layers on the map
-        layersToEnable.forEach(layerId => {
-            if (map.getLayer(layerId)) {
-                map.setLayoutProperty(layerId, 'visibility', 'visible');
-            }
-        });
-        
         setTimeout(() => {
-            // Update collective-GP connection line colors for category mode
             updateCollectiveGPConnectionColors();
-            
-            // Also update connection lines visibility
             updateConnectionLineVisibility();
         }, 50);
     }

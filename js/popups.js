@@ -69,8 +69,9 @@ function createClickPopupContent(properties) {
         'website', 'Website', 'url', 'URL'
     ];
     
-    // Check if this is an Allocator LP popup
     const isAllocatorLP = properties.tabName === 'Allocator LPs';
+    const isGeneralPartner = properties.tabName === 'General Partner Location';
+    const isPortfolioCompany = properties.tabName === 'Portfolio Companies';
     
     // Find company name for title
     let companyName = '';
@@ -116,35 +117,64 @@ function createClickPopupContent(properties) {
         content += `<div class="company-link"><a href="${formattedUrl}" target="_blank" rel="noopener noreferrer">${websiteUrl}</a></div>`;
     }
     
-    // Add other properties
-    Object.entries(properties).forEach(([key, value]) => {
-        const keyLower = key.toLowerCase();
-        const shouldExclude = excludedFields.some(field => keyLower.includes(field));
-        const isCompanyName = companyNameFields.some(field => keyLower.includes(field));
-        
-        // Exclude AUM fields from non-Allocator LP popups
-        const isAUMField = keyLower.includes('aum') || keyLower.includes('assets under management');
-        if (!isAllocatorLP && isAUMField) {
-            return; // Skip this field
+    if (isGeneralPartner) {
+        // General Partner Location: show only HQ Location, AUM, No. of Portfolios, Aggregate Portfolio Value ($mm)
+        const getProp = (keys) => {
+            for (const k of keys) {
+                const v = properties[k];
+                if (v !== undefined && v !== null && String(v).trim() !== '') return String(v).trim();
+            }
+            return '';
+        };
+        const hqKeys = ['HQ Location', 'Hq Location', 'hq location', 'HQ location'];
+        const aumKeys = ['AUM', 'aum'];
+        const numPortKeys = ['No. of Portfolios', 'No of Portfolios', 'no. of portfolios'];
+        const aggKeys = ['Aggregate Portfolio Value ($mm)', 'Aggregate Portfolio Value', 'aggregate portfolio value ($mm)'];
+        const hq = getProp(hqKeys);
+        const aum = getProp(aumKeys);
+        const numPort = getProp(numPortKeys);
+        const aggRaw = getProp(aggKeys);
+        const numPortInt = numPort !== '' ? parseInt(numPort.replace(/,/g, ''), 10) : NaN;
+        const aggInt = aggRaw !== '' ? parseInt(aggRaw.replace(/,/g, ''), 10) : NaN;
+        if (hq) content += `<p><span class="popup-label">HQ Location</span>   <span class="popup-value">${hq}</span></p>`;
+        if (aum) content += `<p><span class="popup-label">AUM</span>   <span class="popup-value">${aum}</span></p>`;
+        if (!isNaN(numPortInt)) content += `<p><span class="popup-label">No. of Portfolios</span>   <span class="popup-value">${numPortInt}</span></p>`;
+        else if (numPort) content += `<p><span class="popup-label">No. of Portfolios</span>   <span class="popup-value">${numPort}</span></p>`;
+        if (!isNaN(aggInt)) content += `<p><span class="popup-label">Aggregate Portfolio Value ($mm)</span>   <span class="popup-value">${aggInt.toLocaleString()}</span></p>`;
+        else if (aggRaw) content += `<p><span class="popup-label">Aggregate Portfolio Value ($mm)</span>   <span class="popup-value">${aggRaw}</span></p>`;
+    } else {
+        // Portfolio Companies: show Portfolio then Industry first (above other fields)
+        if (isPortfolioCompany) {
+            const portfolioVal = properties['Portfolio'] || properties['portfolio'] || '';
+            const industryVal = properties['Industry'] || properties['industry'] || '';
+            if (portfolioVal) content += `<p><span class="popup-label">Portfolio</span>   <span class="popup-value">${portfolioVal}</span></p>`;
+            if (industryVal) content += `<p><span class="popup-label">Industry</span>   <span class="popup-value">${industryVal}</span></p>`;
         }
-        
-        if (value && !shouldExclude && !isCompanyName) {
-            let formattedKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+        // Add other properties for non-GP popups
+        Object.entries(properties).forEach(([key, value]) => {
+            const keyLower = key.toLowerCase();
+            const shouldExclude = excludedFields.some(field => keyLower.includes(field));
+            const isCompanyName = companyNameFields.some(field => keyLower.includes(field));
+            if (isPortfolioCompany && (keyLower === 'portfolio' || keyLower === 'industry')) {
+                return;
+            }
+            const isAUMField = keyLower.includes('aum') || keyLower.includes('assets under management');
+            if (!isAllocatorLP && isAUMField) {
+                return;
+            }
+            if (isPortfolioCompany && (keyLower.includes('last financing size') || keyLower.includes('last financingsize'))) {
+                return;
+            }
             
-            // Fix specific label formatting
-            if (formattedKey.includes('H Q Location')) {
-                formattedKey = formattedKey.replace('H Q Location', 'HQ Location');
+            if (value && !shouldExclude && !isCompanyName) {
+                let formattedKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                if (formattedKey.includes('H Q Location')) formattedKey = formattedKey.replace('H Q Location', 'HQ Location');
+                if (formattedKey.includes('H Q')) formattedKey = formattedKey.replace('H Q', 'HQ');
+                if (formattedKey.includes('A U M')) formattedKey = formattedKey.replace('A U M', 'AUM');
+                content += `<p><span class="popup-label">${formattedKey}</span>   <span class="popup-value">${value}</span></p>`;
             }
-            if (formattedKey.includes('H Q')) {
-                formattedKey = formattedKey.replace('H Q', 'HQ');
-            }
-            if (formattedKey.includes('A U M')) {
-                formattedKey = formattedKey.replace('A U M', 'AUM');
-            }
-            
-            content += `<p><span class="popup-label">${formattedKey}</span>   <span class="popup-value">${value}</span></p>`;
-        }
-    });
+        });
+    }
     
     content += '</div>';
     return content;
