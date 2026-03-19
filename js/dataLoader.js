@@ -103,7 +103,7 @@ async function loadAllDataFromGoogleSheets() {
             initCategoryFilter();
         }
         if (typeof initPortfolioCompanyFilters === 'function') {
-            initPortfolioCompanyFilters();
+            initPortfolioCompanyFilters(portfolioPoints);
         }
         
     } catch (error) {

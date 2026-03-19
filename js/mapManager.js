@@ -33,7 +33,7 @@ async function init() {
             style: 'mapbox://styles/ptrszkwcz/cmfe3511o006w01s49mjcbg80',
             center: [0,9], 
             zoom: 1.8,
-            minZoom: 1.8,
+            minZoom: 1,
             projection: 'naturalEarth'
         });
 

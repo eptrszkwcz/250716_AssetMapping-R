@@ -7,30 +7,14 @@ const PORTFOLIO_COMPANY_FILTERS = [
         name: 'Portfolio',
         column: 'Portfolio',
         type: 'multiselect',
-        options: ['General Catalyst', 'Drive Capital', 'Second Sight Ventures']
+        options: [] // derived at runtime from data
     },
     {
         id: 'sector',
         name: 'Sector',
         column: 'Industry',
         type: 'multiselect',
-        options: [
-            'AI and ML',
-            'Consumer Goods and Services',
-            'Healthcare',
-            'Climate and Energy',
-            'Manufacturing',
-            'Cybersecurity',
-            'Fintech',
-            'Consumer Products and Services',
-            'Business Products',
-            'Information Technology',
-            'Energy',
-            'Financial Services',
-            'Consumer Products',
-            'Health & Wellness',
-            'Food and Beverage'
-        ]
+        options: [] // derived at runtime from data
     },
     {
         id: 'valuation',

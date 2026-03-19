@@ -14,6 +14,27 @@ function getFilterConfig() {
     return typeof PORTFOLIO_COMPANY_FILTERS !== 'undefined' ? PORTFOLIO_COMPANY_FILTERS : [];
 }
 
+// Derive unique multiselect options from portfolio company rows (same key resolution as mapRenderer)
+function getUniqueValuesFromData(rows, config) {
+    if (!rows || rows.length === 0) return [];
+    const col = config.column;
+    const portfolioKeys = ['Portfolio', 'portfolio', 'Portfolio Name', 'GP', 'Fund', 'Venture Partner'];
+    const industryKeys = ['Industry', 'industry'];
+    const keys = col === 'Portfolio' ? portfolioKeys : col === 'Industry' ? industryKeys : [col];
+    const values = new Set();
+    rows.forEach(row => {
+        let v = '';
+        for (const k of keys) {
+            if (row[k] !== undefined && row[k] !== null && String(row[k]).trim() !== '') {
+                v = String(row[k]).trim();
+                break;
+            }
+        }
+        if (v) values.add(v);
+    });
+    return Array.from(values).sort();
+}
+
 function buildFilterExpression() {
     const configs = getFilterConfig();
     const parts = [];
@@ -293,15 +314,21 @@ function reapplyPortfolioCompanyFilter() {
     applyFilter();
 }
 
-function initPortfolioCompanyFilters() {
+function initPortfolioCompanyFilters(portfolioPointsData) {
     const configs = getFilterConfig();
     if (!configs.length) return;
+
+    const data = portfolioPointsData || [];
 
     configs.forEach(config => {
         const block = document.querySelector(`.filter-block[data-filter-id="${config.id}"]`);
         if (!block) return;
         if (config.type === 'multiselect') {
-            initMultiselect(block, config);
+            const options = (config.id === 'portfolio' || config.id === 'sector')
+                ? getUniqueValuesFromData(data, config)
+                : (config.options || []);
+            const configWithOptions = { ...config, options };
+            initMultiselect(block, configWithOptions);
         } else if (config.type === 'slider') {
             initSlider(block, config);
         }
